@@ -1,0 +1,22 @@
+{
+  "name": "souljs",
+  "version": "1.0.0",
+  "description": "souljs",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/my-soul/souljs.git"
+  },
+  "keywords": [
+    "souljs"
+  ],
+  "author": "kun",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/my-soul/souljs/issues"
+  },
+  "homepage": "https://github.com/my-soul/souljs#readme"
+}
