@@ -4,7 +4,7 @@
   "description": "souljs",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "lint": "eslint app config lib *.js"
   },
   "repository": {
     "type": "git",
@@ -18,5 +18,13 @@
   "bugs": {
     "url": "https://github.com/my-soul/souljs/issues"
   },
-  "homepage": "https://github.com/my-soul/souljs#readme"
+  "homepage": "https://github.com/my-soul/souljs#readme",
+  "devDependencies": {
+    "eslint": "^4.19.1",
+    "eslint-config-airbnb-base": "^12.1.0",
+    "eslint-plugin-import": "^2.12.0"
+  },
+  "dependencies": {
+    "koa": "^2.5.1"
+  }
 }
