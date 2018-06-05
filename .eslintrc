@@ -1,10 +1,7 @@
 {
   "extends": "airbnb-base",
-  "parser": "babel-eslint",
   "env": {
-    "browser": true,
-    "node": true,
-    "mocha": true
+    "node": true
   },
   "globals": {
   },
@@ -16,6 +13,10 @@
     "no-underscore-dangle": "off",
     "no-new-func": "off",
     "no-param-reassign": "off",
-    "no-restricted-syntax": "off"
+    "no-restricted-syntax": "off",
+    "class-methods-use-this": "off",
+    "import/no-dynamic-require": "off",
+    "no-continue": "off",
+    "max-len": "off"
   }
 }

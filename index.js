@@ -1,6 +1,3 @@
-'use strict';
-
-
 /**
  * @member {Application} Soul#Application
  * @since 1.0.0
