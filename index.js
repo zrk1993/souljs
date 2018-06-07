@@ -21,3 +21,9 @@ exports.Service = require('./lib/utils/base_context_class');
  * @since 1.2.0
  */
 exports.BaseContextClass = require('./lib/utils/base_context_class');
+
+/**
+ * @member {Logger} Soul#Logger
+ * @since 1.2.0
+ */
+exports.Logger = require('./lib/utils/logger');
