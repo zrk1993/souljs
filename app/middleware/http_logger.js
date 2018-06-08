@@ -1,8 +1,9 @@
-const { log4js } = require('../../index');
+const { logger } = require('../../index');
 
-exports.useLogger = function useLogger() {
+module.exports = function useLogger() {
   return async (ctx, next) => {
+    const start = Date.now();
     await next();
-    log4js.getLogger('http').log('debug', `${ctx.request.method} - ${ctx.response.status} - ${ctx.request.url}`);
+    logger.getLogger('http').log('debug', `${ctx.request.method} - ${ctx.response.status} - ${ctx.request.url} - ${Date.now() - start}ms`);
   };
 };
