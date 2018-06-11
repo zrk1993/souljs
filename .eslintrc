@@ -18,6 +18,7 @@
     "import/no-dynamic-require": "off",
     "no-continue": "off",
     "max-len": "off",
-    "no-debugger": "off"
+    "no-debugger": "off",
+    "func-names": "off"
   }
 }

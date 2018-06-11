@@ -4,15 +4,12 @@
  *
  * @return {function} Koa middleware.
  */
-module.exports = async (ctx, next) => {
-  try {
-    console.log(1);
-    await next();
-    console.log(2);
-    debugger;
-  } catch (err) {
-    debugger;
-    ctx.app.emit('error', err, ctx);
-  }
-  console.log(3);
+module.exports = function () {
+  return async function (ctx, next) {
+    try {
+      await next();
+    } catch (err) {
+      ctx.app.emit('error', err, ctx);
+    }
+  };
 };
