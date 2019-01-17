@@ -1,5 +1,5 @@
 import { User } from './user';
 
-export const controllers = [
+export const controllers: Array<any> = [
     User,
 ];

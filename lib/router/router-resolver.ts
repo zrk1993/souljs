@@ -9,13 +9,11 @@ export class RouterResolver {
     private readonly routers: Array<Function>;
     private readonly appInstance: Application;
     private readonly koaRouter: KoaRouter;
-    private readonly executionContex: ExecutionContex;
 
     constructor(routers: Array<Function>, appInstance: Application, options?: Object) {
         this.routers = routers;
         this.appInstance = appInstance;
         this.koaRouter = new KoaRouter();
-        this.executionContex = new ExecutionContex();
     }
 
     resolve() {
@@ -28,16 +26,18 @@ export class RouterResolver {
             .use(this.koaRouter.allowedMethods());
     }
 
-    private registerRouter(router: any) {
+    private registerRouter(Router: any) {
 
-        const requestMappings = this.getRequestMappings(router.prototype);
+        const executionContex = new ExecutionContex(this.appInstance, this.appInstance.getKoaInstance(), Router);
+
+        const requestMappings = this.getRequestMappings(Router.prototype);
 
         requestMappings.forEach((prop) => {
-            const requestPath: string = Path.join(Reflect.getMetadata(METADATA_ROUTER_PATH, router),
-                Reflect.getMetadata(METADATA_ROUTER_PATH, router.prototype, prop));
-            const requestMethod: string= Reflect.getMetadata(METADATA_ROUTER_METHOD, router.prototype, prop);
+            const requestPath: string = Path.join(Reflect.getMetadata(METADATA_ROUTER_PATH, Router),
+                Reflect.getMetadata(METADATA_ROUTER_PATH, Router.prototype, prop));
+            const requestMethod: string= Reflect.getMetadata(METADATA_ROUTER_METHOD, Router.prototype, prop);
 
-            this.koaRouterRegisterHelper(requestMethod)(requestPath, this.executionContex.create());
+            this.koaRouterRegisterHelper(requestMethod)(requestPath, executionContex.create(prop));
         });
     }
 
