@@ -2,6 +2,7 @@ import {
     Application,
     Controller,
     Get,
+    Middleware,
     IRequest,
     Request,
     IResponse,
@@ -18,10 +19,16 @@ import {
     KoaInstance,
 } from '../../../index';
 
+import { Auth } from '../middleware/Auth';
+
 @Controller('/user')
+@Middleware(Auth)
 export class User {
 
     @Get('/info')
+    @Middleware(Auth, '122')
+    @Middleware(Auth, '122')
+    @Middleware(Auth, '122')
     info(
         @Request() req: IRequest,
         @Response() res: IResponse,

@@ -9,31 +9,30 @@ export class ExecutionContex {
 
     private readonly appInstance: Application;
     private readonly koaInstance: Koa;
-    private readonly routerInstance: any;
-    private readonly RouterClass: any;
+    private readonly contextInstance: any;
+    private readonly ContextClass: any;
 
-    constructor(appInstance: Application, koaInstance: Koa, RouterClass: any) {
+    constructor(appInstance: Application, koaInstance: Koa, ContextClass: any, ContextClassArgs: Array<any> = []) {
         this.appInstance = appInstance;
         this.koaInstance = koaInstance;
-        this.RouterClass = RouterClass;
-        this.routerInstance = new RouterClass();
+        this.ContextClass = ContextClass;
+        this.contextInstance = new ContextClass(...ContextClassArgs);
     }
 
-    create (propertyKey: string): KoaRouter.IMiddleware  {
+    create (propertyKey: string, handResponse?: (response: any | Error, ctx: Koa.Context) => void): KoaRouter.IMiddleware  {
         return async (ctx: Koa.Context, next: Function) => {
-            const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey);
-            const response =  await this.routerInstance[propertyKey].call(this.routerInstance, ...params);
-            this.handResponse(response, ctx);
+            const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
+            const response =  await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
+            
+            if (typeof handResponse === 'function') {
+                handResponse(response, ctx);
+            }
         };
-    }
-
-    private handResponse(result: any, ctx: Koa.Context) {
-        ctx.body = result;
     }
 
     private getRouterHandlerParams(ctx: Koa.Context, next: Function, propertyKey: string): Array<any> {
         const results: Array<any> = [];
-        const routerParams: Array<any> = Reflect.getMetadata(METADATA_ROUTER_PARAMS, this.RouterClass.prototype, propertyKey);
+        const routerParams: Array<any> = Reflect.getMetadata(METADATA_ROUTER_PARAMS, this.ContextClass.prototype, propertyKey) || [];
         
         routerParams.forEach((param: { index: number, type: ParamDecoratorType, data: any }) => {
             results[param.index] = this.convertParamDecorator(param, ctx, next);

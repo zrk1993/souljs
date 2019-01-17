@@ -6,11 +6,7 @@ function createParamDecorator(paramDecoratorType: ParamDecoratorType) {
     return function(data?: any) {
         return function (target: Object, propertyKey: string | symbol, parameterIndex: number) {
 
-            if (!Reflect.hasMetadata(METADATA_ROUTER_PARAMS, target, propertyKey)) {
-                Reflect.defineMetadata(METADATA_ROUTER_PARAMS, [], target, propertyKey);
-            }
-
-            const routerParams: Array<any> = Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey);
+            const routerParams: Array<any> = Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey) || [];
 
             routerParams.push({
                 type: paramDecoratorType,

@@ -1,6 +1,7 @@
 import * as http from 'http';
 import * as Koa from 'koa';
 import { RouterResolver } from './router/router-resolver';
+import { ExecutionContex } from './router/execution-contex';
 
 export interface ApplicationOptions {
     controllers: Array<any>
@@ -14,7 +15,7 @@ export class Application {
 
     private readonly routerResolver: RouterResolver;
 
-    private readonly routers: Array<new () => {}>;
+    private readonly routers: Array<any>;
 
     constructor(options: ApplicationOptions) {
         this.routers = options.controllers;
@@ -27,11 +28,13 @@ export class Application {
         return http.createServer(koaInstance.callback());
     }
 
-    useGlobalMiddleware() {
-    }
-
     private registerRouter() {
         this.routerResolver.resolve();
+    }
+
+    useGlobalMiddleware(middlewareClass: any, args?: Array<any>) {
+        const executionContex = new ExecutionContex(this, this.getKoaInstance(), middlewareClass, args);
+        this.getKoaInstance().use(executionContex.create('pip'));
     }
 
     listen(port: number) {
