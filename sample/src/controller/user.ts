@@ -9,7 +9,6 @@ import {
     Response,
     ICtx,
     Ctx,
-    INext,
     Next,
     Param,
     Query,
@@ -20,15 +19,16 @@ import {
 } from '../../../index';
 
 import { Auth } from '../middleware/Auth';
+import { Test } from '../middleware/Test';
 
 @Controller('/user')
 @Middleware(Auth)
+@Middleware(Test)
 export class User {
 
     @Get('/info')
-    @Middleware(Auth, '122')
-    @Middleware(Auth, '122')
-    @Middleware(Auth, '122')
+    @Middleware(Test)
+    @Middleware(Auth)
     info(
         @Request() req: IRequest,
         @Response() res: IResponse,
@@ -37,6 +37,7 @@ export class User {
         @ApplicationInstance() applicationCache: Application,
         @Body() body: { a: 12, as: 9 }
     ) {
+        query.a();
         return query;
     }
 

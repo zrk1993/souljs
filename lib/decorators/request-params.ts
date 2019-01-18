@@ -37,6 +37,8 @@ export const Session = createParamDecorator(ParamDecoratorType.Session);
 
 export const Headers = createParamDecorator(ParamDecoratorType.Headers);
 
+export const Cookies = createParamDecorator(ParamDecoratorType.Cookies);
+
 export const ApplicationInstance = createParamDecorator(ParamDecoratorType.ApplicationInstance);
 
 export const KoaInstance = createParamDecorator(ParamDecoratorType.KoaInstance);

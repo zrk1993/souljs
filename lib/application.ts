@@ -10,36 +10,33 @@ export interface ApplicationOptions {
 export class Application {
 
     private readonly httpServer: http.Server;
-
     private readonly koaInstance: Koa;
-
-    private readonly routerResolver: RouterResolver;
-
     private readonly routers: Array<any>;
 
     constructor(options: ApplicationOptions) {
         this.routers = options.controllers;
         this.koaInstance = new Koa();
-        this.httpServer = this.createHttpServer(this.koaInstance);
-        this.routerResolver = new RouterResolver(this.routers, this);
+        this.httpServer = this.createHttpServer();
     }
 
-    private createHttpServer(koaInstance: Koa): http.Server {
-        return http.createServer(koaInstance.callback());
+    private createHttpServer(): http.Server {
+        return http.createServer(this.koaInstance.callback());
     }
 
     private registerRouter() {
-        this.routerResolver.resolve();
+        const routerResolver = new RouterResolver(this.routers, this);
+        routerResolver.resolve();
     }
 
     useGlobalMiddleware(middlewareClass: any, args?: Array<any>) {
-        const executionContex = new ExecutionContex(this, this.getKoaInstance(), middlewareClass, args);
+        const executionContex = new ExecutionContex(this, middlewareClass, args);
         this.getKoaInstance().use(executionContex.create('pip'));
     }
 
     listen(port: number) {
         this.registerRouter();
         this.httpServer.listen(port);
+        console.info('Listening at %d', port);
     }
 
     getKoaInstance(): Koa {

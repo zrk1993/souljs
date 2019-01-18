@@ -8,26 +8,34 @@ import { ParamDecoratorType } from '../enums';
 export class ExecutionContex {
 
     private readonly appInstance: Application;
-    private readonly koaInstance: Koa;
     private readonly contextInstance: any;
     private readonly ContextClass: any;
 
-    constructor(appInstance: Application, koaInstance: Koa, ContextClass: any, ContextClassArgs: Array<any> = []) {
+    constructor(appInstance: Application, ContextClass: any, ContextClassArgs: Array<any> = []) {
         this.appInstance = appInstance;
-        this.koaInstance = koaInstance;
         this.ContextClass = ContextClass;
         this.contextInstance = new ContextClass(...ContextClassArgs);
     }
 
     create (propertyKey: string, handResponse?: (response: any | Error, ctx: Koa.Context) => void): KoaRouter.IMiddleware  {
-        return async (ctx: Koa.Context, next: Function) => {
+        
+        const fn =  async (ctx: Koa.Context, next: Function) => {
             const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
-            const response =  await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
-            
-            if (typeof handResponse === 'function') {
-                handResponse(response, ctx);
+
+            try {
+                const response =  await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
+
+                if (typeof handResponse === 'function') {
+                    handResponse(response, ctx);
+                }
+            } catch (error) {
+                console.error('请求处理异常 %s, Error: %O', fn.lable, error);
             }
         };
+
+        fn.lable = `${this.ContextClass.name}.${propertyKey}`;
+
+        return fn;
     }
 
     private getRouterHandlerParams(ctx: Koa.Context, next: Function, propertyKey: string): Array<any> {
@@ -49,11 +57,12 @@ export class ExecutionContex {
             case ParamDecoratorType.Next: return next;
             case ParamDecoratorType.Query: return ctx.query;
             case ParamDecoratorType.Param: return ctx.params;
-            case ParamDecoratorType.Body: return ctx.request;
-            case ParamDecoratorType.Session: return ctx.request;
+            case ParamDecoratorType.Body: return ctx.request.body;
+            case ParamDecoratorType.Session: return ctx.session;
             case ParamDecoratorType.Headers: return ctx.request.headers;
+            case ParamDecoratorType.Cookies: return ctx.cookies;
             case ParamDecoratorType.ApplicationInstance: return this.appInstance;
-            case ParamDecoratorType.KoaInstance: return this.koaInstance;
+            case ParamDecoratorType.KoaInstance: return this.appInstance.getKoaInstance();
             default: return undefined;
         }
     }

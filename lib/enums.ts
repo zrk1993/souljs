@@ -7,6 +7,7 @@ export enum ParamDecoratorType {
     Param = 'Param',
     Body = 'Body',
     Session = 'Session',
+    Cookies = 'Cookies',
     Headers = 'Headers',
     KoaInstance = 'KoaInstance',
     ApplicationInstance = 'ApplicationInstance'
