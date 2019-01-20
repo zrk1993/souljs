@@ -42,10 +42,10 @@ export class RouterResolver {
     const requestMappings = this.getRequestMappings(Router.prototype);
 
     requestMappings.forEach(prop => {
-      const requestPath: string = Path.join(
+      const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router.prototype, prop),
-      );
+      ].join('');
       const requestMethod: string = Reflect.getMetadata(
         METADATA_ROUTER_METHOD,
         Router.prototype,

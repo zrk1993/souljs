@@ -36,7 +36,6 @@ export class User {
     @ApplicationInstance() applicationCache: Application,
     @Body() body: { a: 12; as: 9 },
   ) {
-    query.a();
     return query;
   }
 }
