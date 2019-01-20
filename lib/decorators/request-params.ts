@@ -1,22 +1,31 @@
-import "reflect-metadata";
+import 'reflect-metadata';
 import { ParamDecoratorType } from '../enums';
 import { METADATA_ROUTER_PARAMS } from '../constants';
 
 function createParamDecorator(paramDecoratorType: ParamDecoratorType) {
-    return function(data?: any) {
-        return function (target: Object, propertyKey: string | symbol, parameterIndex: number) {
+  return function(data?: any) {
+    return function(
+      target: Object,
+      propertyKey: string | symbol,
+      parameterIndex: number,
+    ) {
+      const routerParams: Array<any> =
+        Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey) || [];
 
-            const routerParams: Array<any> = Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey) || [];
+      routerParams.push({
+        type: paramDecoratorType,
+        index: parameterIndex,
+        data,
+      });
 
-            routerParams.push({
-                type: paramDecoratorType,
-                index: parameterIndex,
-                data,
-            });
-
-            Reflect.defineMetadata(METADATA_ROUTER_PARAMS, routerParams, target, propertyKey);
-        };
+      Reflect.defineMetadata(
+        METADATA_ROUTER_PARAMS,
+        routerParams,
+        target,
+        propertyKey,
+      );
     };
+  };
 }
 
 export const Request = createParamDecorator(ParamDecoratorType.Request);
@@ -39,6 +48,8 @@ export const Headers = createParamDecorator(ParamDecoratorType.Headers);
 
 export const Cookies = createParamDecorator(ParamDecoratorType.Cookies);
 
-export const ApplicationInstance = createParamDecorator(ParamDecoratorType.ApplicationInstance);
+export const ApplicationInstance = createParamDecorator(
+  ParamDecoratorType.ApplicationInstance,
+);
 
 export const KoaInstance = createParamDecorator(ParamDecoratorType.KoaInstance);

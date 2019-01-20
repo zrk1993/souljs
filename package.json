@@ -2,9 +2,9 @@
   "name": "souljs",
   "version": "2.0.0",
   "description": "souljs",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
-    "lint": "eslint app config lib *.js"
+    "format": "prettier **/**/*.ts --ignore-path ./.prettierignore --write && git status"
   },
   "repository": {
     "type": "git",
@@ -13,7 +13,7 @@
   "keywords": [
     "souljs"
   ],
-  "author": "kun",
+  "author": "renkun",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/my-soul/souljs/issues"
@@ -24,6 +24,7 @@
     "@types/koa-bodyparser": "^4.2.1",
     "@types/koa-router": "^7.0.37",
     "@types/koa-session": "^5.7.4",
+    "prettier": "1.15.3",
     "ts-node": "^7.0.1"
   },
   "dependencies": {
