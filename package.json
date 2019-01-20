@@ -1,7 +1,7 @@
 {
   "name": "souljs",
   "version": "2.0.1",
-  "description": "souljs",
+  "description": "A nodejs framework for building concise and decorative applications written by typescript",
   "main": "index.ts",
   "scripts": {
     "format": "prettier **/**/*.ts --ignore-path ./.prettierignore --write && git status",
@@ -26,7 +26,8 @@
     "@types/koa-router": "^7.0.37",
     "@types/koa-session": "^5.7.4",
     "prettier": "1.15.3",
-    "ts-node": "^7.0.1"
+    "ts-node": "^7.0.1",
+    "typescript": "^3.2.2"
   },
   "dependencies": {
     "koa": "^2.6.2",
