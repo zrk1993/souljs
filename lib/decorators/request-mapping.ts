@@ -6,12 +6,7 @@ function createRequestMapping(method: String) {
   return function(path: string) {
     return function(target: any, propertyKey: string) {
       Reflect.defineMetadata(METADATA_ROUTER_PATH, path, target, propertyKey);
-      Reflect.defineMetadata(
-        METADATA_ROUTER_METHOD,
-        method,
-        target,
-        propertyKey,
-      );
+      Reflect.defineMetadata(METADATA_ROUTER_METHOD, method, target, propertyKey);
     };
   };
 }

@@ -30,6 +30,8 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "class-transformer": "^0.2.0",
+    "class-validator": "^0.9.1",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
     "koa-helmet": "^4.0.0",

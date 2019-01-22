@@ -10,35 +10,25 @@ export class ExecutionContex {
   private readonly contextInstance: any;
   private readonly ContextClass: any;
 
-  constructor(
-    appInstance: Application,
-    ContextClass: any,
-    ContextClassArgs: Array<any> = [],
-  ) {
+  constructor(appInstance: Application, ContextClass: any, ContextClassArgs: Array<any> = []) {
     this.appInstance = appInstance;
     this.ContextClass = ContextClass;
     this.contextInstance = new ContextClass(...ContextClassArgs);
   }
 
-  create(
-    propertyKey: string,
-    handResponse?: (response: any | Error, ctx: Koa.Context) => void,
-  ): KoaRouter.IMiddleware {
+  create(propertyKey: string, handResponse?: (response: any | Error, ctx: Koa.Context) => void): KoaRouter.IMiddleware {
     const fn = async (ctx: Koa.Context, next: Function) => {
-      const params: Array<any> =
-        this.getRouterHandlerParams(ctx, next, propertyKey) || [];
+      const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
 
       try {
-        const response = await this.contextInstance[propertyKey].call(
-          this.contextInstance,
-          ...params,
-        );
+        const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
         if (typeof handResponse === 'function') {
           handResponse(response, ctx);
         }
       } catch (error) {
         console.error('请求处理异常 %s, Error: %O', fn.lable, error);
+        ctx.body = error;
       }
     };
 
@@ -47,34 +37,24 @@ export class ExecutionContex {
     return fn;
   }
 
-  private getRouterHandlerParams(
-    ctx: Koa.Context,
-    next: Function,
-    propertyKey: string,
-  ): Array<any> {
+  private getRouterHandlerParams(ctx: Koa.Context, next: Function, propertyKey: string): Array<any> {
     const results: Array<any> = [];
     const routerParams: Array<any> =
-      Reflect.getMetadata(
-        METADATA_ROUTER_PARAMS,
-        this.ContextClass.prototype,
-        propertyKey,
-      ) || [];
+      Reflect.getMetadata(METADATA_ROUTER_PARAMS, this.ContextClass.prototype, propertyKey) || [];
 
-    routerParams.forEach(
-      (param: { index: number; type: ParamDecoratorType; data: any }) => {
-        results[param.index] = this.convertParamDecorator(param, ctx, next);
-      },
-    );
+    routerParams.forEach((param: { index: number; type: ParamDecoratorType; data: any }) => {
+      results[param.index] = this.convertParamDecorator(param, ctx, next);
+    });
 
     return results;
   }
 
   private convertParamDecorator(
-    routerParams: { index: number; type: ParamDecoratorType; data: any },
+    param: { index: number; type: ParamDecoratorType; data: any },
     ctx: Koa.Context,
     next: Function,
   ): any {
-    switch (routerParams.type) {
+    switch (param.type) {
       case ParamDecoratorType.Request:
         return ctx.request;
       case ParamDecoratorType.Response:
@@ -84,11 +64,11 @@ export class ExecutionContex {
       case ParamDecoratorType.Next:
         return next;
       case ParamDecoratorType.Query:
-        return ctx.query;
+        return param.data && ctx.request.query ? ctx.request.query[param.data] : ctx.request.query;
       case ParamDecoratorType.Param:
-        return ctx.params;
+        return param.data && ctx.params ? ctx.params[param.data] : ctx.params;
       case ParamDecoratorType.Body:
-        return ctx.request.body;
+        return param.data && ctx.request.body ? ctx.request.body[param.data] : ctx.request.body;
       case ParamDecoratorType.Session:
         return ctx.session;
       case ParamDecoratorType.Headers:

@@ -3,12 +3,9 @@ import * as Path from 'path';
 import * as KoaRouter from 'koa-router';
 import * as Koa from 'koa';
 import { ExecutionContex } from './execution-contex';
+import { validateParams } from './validate-params';
 import { Application } from '../application';
-import {
-  METADATA_ROUTER_METHOD,
-  METADATA_ROUTER_PATH,
-  METADATA_ROUTER_MIDDLEWARE,
-} from '../constants';
+import { METADATA_ROUTER_METHOD, METADATA_ROUTER_PATH, METADATA_ROUTER_MIDDLEWARE } from '../constants';
 
 export class RouterResolver {
   private readonly routers: Array<any>;
@@ -46,30 +43,20 @@ export class RouterResolver {
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router.prototype, prop),
       ].join('');
-      const requestMethod: string = Reflect.getMetadata(
-        METADATA_ROUTER_METHOD,
-        Router.prototype,
-        prop,
-      );
+      const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Router.prototype, prop);
 
       const propMiddlewares = this.getMiddlewares(Router.prototype, prop);
 
+      const validateParamsPip = validateParams(Router, prop);
+
       const allMiddlewares = []
         .concat(routerMiddlewares)
-        .concat(propMiddlewares);
+        .concat(propMiddlewares)
+        .concat([validateParamsPip]);
 
-      console.info(
-        '应用中间件 %s',
-        allMiddlewares.map(i => i.lable).join(' -> '),
-      );
+      console.info('应用中间件 %s', allMiddlewares.map(i => i.lable).join(' -> '));
 
-      console.info(
-        '注册路由 %s.%s %s %s',
-        Router.name,
-        prop,
-        requestMethod,
-        requestPath,
-      );
+      console.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
 
       this.koaRouterRegisterHelper(requestMethod)(
         requestPath,
@@ -81,16 +68,11 @@ export class RouterResolver {
 
   private getMiddlewares(target: any, propertyKey?: string): Array<Function> {
     const middlewares: Array<{ middlewareClass: any; args: Array<any> }> =
-      Reflect.getMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey) ||
-      [];
+      Reflect.getMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey) || [];
 
     return middlewares
       .map(mid => {
-        const executionContex = new ExecutionContex(
-          this.appInstance,
-          mid.middlewareClass,
-          mid.args,
-        );
+        const executionContex = new ExecutionContex(this.appInstance, mid.middlewareClass, mid.args);
         return executionContex.create('pip');
       })
       .reverse();
