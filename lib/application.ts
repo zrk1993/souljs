@@ -5,6 +5,8 @@ import { ExecutionContex } from './router/execution-contex';
 
 export interface ApplicationOptions {
   controllers: Array<any>;
+  hbs?: { viewPath: string },
+  staticAssets?: { root: string }
 }
 
 export class Application {
@@ -31,6 +33,8 @@ export class Application {
     const executionContex = new ExecutionContex(this, middlewareClass, args);
     this.getKoaInstance().use(executionContex.create('pip'));
   }
+
+  setStaticAssets(options: { root: string, prefix: string }) {}
 
   listen(port: number) {
     this.registerRouter();

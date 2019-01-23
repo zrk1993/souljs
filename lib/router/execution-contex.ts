@@ -1,40 +1,50 @@
 import 'reflect-metadata';
 import * as Koa from 'koa';
 import * as KoaRouter from 'koa-router';
+import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
-import { METADATA_ROUTER_PARAMS } from '../constants';
+import { METADATA_ROUTER_PARAMS, METADATA_ROUTER_RENDER_VIEW } from '../constants';
 import { ParamDecoratorType } from '../enums';
 
 export class ExecutionContex {
   private readonly appInstance: Application;
   private readonly contextInstance: any;
   private readonly ContextClass: any;
+  private readonly responseHandler: ResponseHandler;
 
-  constructor(appInstance: Application, ContextClass: any, ContextClassArgs: Array<any> = []) {
+  constructor(
+    appInstance: Application,
+    responseHandler: ResponseHandler,
+    ContextClass: any,
+    ContextClassArgs: Array<any> = [],
+  ) {
     this.appInstance = appInstance;
     this.ContextClass = ContextClass;
+    this.responseHandler = responseHandler;
     this.contextInstance = new ContextClass(...ContextClassArgs);
   }
 
-  create(propertyKey: string, handResponse?: (response: any | Error, ctx: Koa.Context) => void): KoaRouter.IMiddleware {
-    const fn = async (ctx: Koa.Context, next: Function) => {
+  create(propertyKey: string): KoaRouter.IMiddleware {
+    const renderViewPath = Reflect.getMetadata(METADATA_ROUTER_RENDER_VIEW, this.ContextClass.prototype, propertyKey);
+
+    return async (ctx: Koa.Context, next: Function) => {
       const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
 
       try {
         const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
-        if (typeof handResponse === 'function') {
-          handResponse(response, ctx);
+        if (response !== undefined) {
+          if (renderViewPath) {
+            await this.responseHandler.responseHtml(ctx, response, renderViewPath);
+          } else {
+            this.responseHandler.responseJson(ctx, response);
+          }
         }
       } catch (error) {
-        console.error('请求处理异常 %s, Error: %O', fn.lable, error);
-        ctx.body = error;
+        console.error('请求处理异常Error: %O', error);
+        this.responseHandler.internalServerErrorException(ctx, error);
       }
     };
-
-    fn.lable = `${this.ContextClass.name}.${propertyKey}`;
-
-    return fn;
   }
 
   private getRouterHandlerParams(ctx: Koa.Context, next: Function, propertyKey: string): Array<any> {

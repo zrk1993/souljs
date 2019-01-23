@@ -4,13 +4,25 @@
     // 欲了解更多信息，请访问: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        {
-            "type": "node",
-            "request": "launch",
-            "env": { "DEBUG": "soul*" },
-            "name": "启动程序",
-            "program": "${workspaceFolder}/dist/sample/src/main.js",
-            "preLaunchTask": "build"
-        }
+      {
+        "name": "Current TS File",
+        "type": "node",
+        "request": "launch",
+        "args": [
+          "${workspaceRoot}/sample/src/main.ts" // 入口文件
+        ],
+        "runtimeArgs": [
+          "--nolazy",
+          "-r",
+          "ts-node/register"
+        ],
+        "sourceMaps": true,
+        "cwd": "${workspaceRoot}",
+        "protocol": "inspector",
+        "console": "integratedTerminal",
+        "internalConsoleOptions": "neverOpen"
+      }
     ]
 }
+
+

@@ -5,7 +5,8 @@
   "main": "index.ts",
   "scripts": {
     "format": "prettier **/**/*.ts --ignore-path ./.prettierignore --write && git status",
-    "publish": "npm publish"
+    "publish": "npm publish",
+    "sample": "ts-node sample/src/main.ts"
   },
   "repository": {
     "type": "git",
@@ -23,8 +24,10 @@
   "devDependencies": {
     "@types/koa": "^2.0.48",
     "@types/koa-bodyparser": "^4.2.1",
+    "@types/koa-hbs": "^1.0.4",
     "@types/koa-router": "^7.0.37",
     "@types/koa-session": "^5.7.4",
+    "@types/koa-static": "^4.0.0",
     "prettier": "1.15.3",
     "ts-node": "^7.0.1",
     "typescript": "^3.2.2"
@@ -34,9 +37,11 @@
     "class-validator": "^0.9.1",
     "koa": "^2.6.2",
     "koa-bodyparser": "^4.2.1",
+    "koa-hbs": "^1.0.0",
     "koa-helmet": "^4.0.0",
     "koa-router": "^7.4.0",
     "koa-session": "^5.10.1",
+    "koa-static": "^5.0.0",
     "reflect-metadata": "^0.1.12"
   }
 }

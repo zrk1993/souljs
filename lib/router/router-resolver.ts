@@ -4,6 +4,7 @@ import * as KoaRouter from 'koa-router';
 import * as Koa from 'koa';
 import { ExecutionContex } from './execution-contex';
 import { validateParams } from './validate-params';
+import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
 import { METADATA_ROUTER_METHOD, METADATA_ROUTER_PATH, METADATA_ROUTER_MIDDLEWARE } from '../constants';
 
@@ -11,11 +12,13 @@ export class RouterResolver {
   private readonly routers: Array<any>;
   private readonly appInstance: Application;
   private readonly koaRouter: KoaRouter;
+  private readonly responseHandler: ResponseHandler;
 
   constructor(routers: Array<any>, appInstance: Application, options?: Object) {
     this.routers = routers;
     this.appInstance = appInstance;
     this.koaRouter = new KoaRouter();
+    this.responseHandler = new ResponseHandler(this.appInstance);
   }
 
   resolve() {
@@ -32,7 +35,7 @@ export class RouterResolver {
   private registerRouter(Router: any) {
     console.info('加载控制器 %s', Router.name);
 
-    const executionContex = new ExecutionContex(this.appInstance, Router);
+    const executionContex = new ExecutionContex(this.appInstance, this.responseHandler, Router);
 
     const routerMiddlewares = this.getMiddlewares(Router);
 
@@ -58,11 +61,7 @@ export class RouterResolver {
 
       console.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
 
-      this.koaRouterRegisterHelper(requestMethod)(
-        requestPath,
-        ...allMiddlewares,
-        executionContex.create(prop, this.handResponse),
-      );
+      this.koaRouterRegisterHelper(requestMethod)(requestPath, ...allMiddlewares, executionContex.create(prop));
     });
   }
 
@@ -72,14 +71,15 @@ export class RouterResolver {
 
     return middlewares
       .map(mid => {
-        const executionContex = new ExecutionContex(this.appInstance, mid.middlewareClass, mid.args);
+        const executionContex = new ExecutionContex(
+          this.appInstance,
+          this.responseHandler,
+          mid.middlewareClass,
+          mid.args,
+        );
         return executionContex.create('pip');
       })
       .reverse();
-  }
-
-  private handResponse(response: any | Error, ctx: Koa.Context) {
-    ctx.body = response;
   }
 
   private koaRouterRegisterHelper(m: string) {

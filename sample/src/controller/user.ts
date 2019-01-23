@@ -23,6 +23,8 @@ import {
 import { Auth } from '../middleware/Auth';
 import { Test } from '../middleware/Test';
 
+import { ResultUtils } from '../utils'
+
 import { IsEmail, IsNotEmpty } from 'class-validator';
 
 class CreateUserDto {
@@ -36,18 +38,18 @@ class CreateUserDto {
 @Middleware(Auth)
 @Middleware(Test)
 export class User {
+  @Get('')
+  @Render('user')
+  index() {
+    return { content: 'asdasdasdasd' };
+  }
+
   @Get('/info')
-  @Render('/user/info')
-  @Middleware(Test)
   @Middleware(Auth)
   info(
-    @Request() req: IRequest,
-    @Response() res: IResponse,
     @Query() query: CreateUserDto,
     @Optional() @Body('s') s: String = 'hi',
-    @Headers() hreaders: any,
-    @ApplicationInstance() applicationCache: Application
   ) {
-    return s;
+    return ResultUtils.ok(query);
   }
 }
