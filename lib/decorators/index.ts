@@ -3,3 +3,4 @@ export * from './request-params';
 export * from './middleware';
 export * from './render';
 export * from './optional';
+export * from './swagger-api';

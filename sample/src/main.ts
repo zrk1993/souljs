@@ -10,6 +10,9 @@ async function main() {
     staticAssets: {
       root: __dirname + '/public',
     },
+    swagger: {
+      url: '/api/doc',
+    },
   });
 
   app.listen(3001);

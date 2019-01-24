@@ -40,7 +40,7 @@ async function validate(ctx: Koa.Context, param: ValidParam, ContextClass: any, 
 
   if (
     targetValue === undefined &&
-    Reflect.hasMetadata(METADATA_ROUTER_PARAM_OPTIONAL, ContextClass.prototype, `${prop}_${Number}`)
+    Reflect.hasMetadata(METADATA_ROUTER_PARAM_OPTIONAL, ContextClass.prototype, `${prop}_${param.index}`)
   ) {
     return;
   }

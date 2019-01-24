@@ -5,8 +5,9 @@ import { ExecutionContex } from './router/execution-contex';
 
 export interface ApplicationOptions {
   controllers: Array<any>;
-  hbs?: { viewPath: string },
-  staticAssets?: { root: string }
+  hbs?: { viewPath: string };
+  staticAssets?: { root: string; prefix?: string };
+  swagger?: { url: string; prefix?: string };
 }
 
 export class Application {
@@ -34,8 +35,6 @@ export class Application {
     this.getKoaInstance().use(executionContex.create('pip'));
   }
 
-  setStaticAssets(options: { root: string, prefix: string }) {}
-
   listen(port: number) {
     this.registerRouter();
     this.httpServer.listen(port);
@@ -48,5 +47,9 @@ export class Application {
 
   getHttpServer(): http.Server {
     return this.httpServer;
+  }
+
+  getRouters(): Array<any> {
+    return this.routers;
   }
 }
