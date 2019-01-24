@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import { getFromContainer, MetadataStorage } from 'class-validator';
 import * as Koa from 'koa';
 import * as fs from 'fs';
 import * as path from 'path';
@@ -6,7 +7,10 @@ import * as mount from 'koa-mount';
 import * as koaStatic from 'koa-static';
 import * as SwaggerUIDist from 'swagger-ui-dist';
 import { Application } from './application';
+import { ParamDecoratorType } from './enums';
 import {
+  METADATA_ROUTER_PARAMS,
+  METADATA_ROUTER_PARAM_OPTIONAL,
   METADATA_ROUTER_METHOD,
   METADATA_ROUTER_PATH,
   METADATA_API_USETAGS,
@@ -55,9 +59,16 @@ interface IAPI {
 interface IPath {
   summary: string;
   tags: Array<string>;
-  produces: Array<string>;
-  responses: any;
-  parameters: Array<any>;
+  produces?: Array<string>;
+  responses?: any;
+  parameters?: Array<any>;
+}
+
+interface ValidParam {
+  type: ParamDecoratorType;
+  index: number;
+  data: any;
+  paramtype: any;
 }
 
 const api: IAPI = {
@@ -83,9 +94,10 @@ function generateApi(controllers: Array<any>): IAPI {
     const tag = Reflect.getMetadata(METADATA_API_USETAGS, Controller);
     const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller) || '';
 
-    api.tags.push({ name: tag, description });
+    if (!api.tags.find(i => i.name === tag)) api.tags.push({ name: tag, description });
 
     requestMappings.forEach(prop => {
+
       const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller.prototype, prop),
@@ -95,15 +107,63 @@ function generateApi(controllers: Array<any>): IAPI {
 
       const operation = Reflect.getMetadata(METADATA_API_OPERATION, Controller.prototype, prop);
 
-      const obj: IPath = {
+      const method: IPath = {
         summary: operation,
         tags: [tag],
         produces: ['application/json'],
-        responses: { 200: { code: 200, message: '', result: '' } },
         parameters: [],
+        responses: {default: {description: "successful operation"}}
       };
 
-      api.paths[requestPath] = { [requestMethod.toLowerCase()]: obj };
+      const types: Array<any> = Reflect.getMetadata('design:paramtypes', Controller.prototype, prop);
+
+      const shouldValidParams: Array<ValidParam> = (
+        Reflect.getMetadata(METADATA_ROUTER_PARAMS, Controller.prototype, prop) || []
+      )
+        .map((item: ValidParam) => {
+          item.paramtype = types[item.index];
+          return item;
+        })
+        .filter((item: ValidParam) => {
+          return (
+            item.type === ParamDecoratorType.Body ||
+            item.type === ParamDecoratorType.Query ||
+            item.type === ParamDecoratorType.Param
+          );
+        })
+        .filter((item: ValidParam) => {
+          const types = [Object];
+          return !types.some(t => item.paramtype === t);
+        });
+
+        shouldValidParams.forEach((param) => {
+
+          const required = Reflect.hasMetadata(METADATA_ROUTER_PARAM_OPTIONAL, Controller.prototype, `${prop}_${param.index}`)
+
+          const types = [String, Number, Boolean, Object, Array, undefined];
+
+          if (types.some(t => t === param.paramtype)) {
+            method.parameters.push({
+              name: param.data,
+              in: param.type,
+              type: typeof param.paramtype,
+              required,
+              description: 'key',
+            });
+          } else {
+            const validationMetadatas = getFromContainer(MetadataStorage).getTargetValidationMetadatas(param.paramtype.constructor, param.paramtype);
+            validationMetadatas.forEach((item: any) => {
+              method.parameters.push({
+                name: item.propertyName,
+                in: param.type,
+                type: 'string',
+                description: item.type,
+              });
+            });
+          }
+        });
+
+      api.paths[requestPath] = { [requestMethod.toLowerCase()]: method };
     });
   });
   return api;

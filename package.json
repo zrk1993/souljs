@@ -35,6 +35,7 @@
     "typescript": "^3.2.2"
   },
   "dependencies": {
+    "apidoc-plugin-class-validator": "0.0.3",
     "class-transformer": "^0.2.0",
     "class-validator": "^0.9.1",
     "koa": "^2.6.2",
