@@ -26,8 +26,6 @@ export const Ctx = createParamDecorator(ParamDecoratorType.Ctx);
 
 export const Next = createParamDecorator(ParamDecoratorType.Next);
 
-export const Param = createParamDecorator(ParamDecoratorType.Param);
-
 export const Query = createParamDecorator(ParamDecoratorType.Query);
 
 export const Body = createParamDecorator(ParamDecoratorType.Body);

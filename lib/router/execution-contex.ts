@@ -33,12 +33,10 @@ export class ExecutionContex {
       try {
         const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
-        if (response !== undefined) {
-          if (renderViewPath) {
-            await this.responseHandler.responseHtml(ctx, response, renderViewPath);
-          } else {
-            this.responseHandler.responseJson(ctx, response);
-          }
+        if (renderViewPath) {
+          await this.responseHandler.responseHtml(ctx, response, renderViewPath);
+        } else {
+          this.responseHandler.responseJson(ctx, response);
         }
       } catch (error) {
         console.error('请求处理异常Error: %O', error);
@@ -75,8 +73,6 @@ export class ExecutionContex {
         return next;
       case ParamDecoratorType.Query:
         return param.data && ctx.request.query ? ctx.request.query[param.data] : ctx.request.query;
-      case ParamDecoratorType.Param:
-        return param.data && ctx.params ? ctx.params[param.data] : ctx.params;
       case ParamDecoratorType.Body:
         return param.data && ctx.request.body ? ctx.request.body[param.data] : ctx.request.body;
       case ParamDecoratorType.Session:
