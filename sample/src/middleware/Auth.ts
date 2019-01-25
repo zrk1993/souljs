@@ -1,7 +1,8 @@
-import { ICtx, Ctx, Next } from '../../../index';
+import * as Koa from 'koa';
 
-export class Auth {
-  async pip(@Ctx() ctx: ICtx, @Next() next: Function) {
+export function Auth(): Koa.Middleware {
+  return async (ctx: Koa.Context, next: Function)=> {
+    console.log('auth');
     await next();
-  }
+  };
 }

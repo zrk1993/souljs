@@ -1,7 +1,7 @@
 import {
   Controller,
   Get,
-  Middleware,
+  Use,
   Render,
   Query,
   Body,
@@ -21,8 +21,8 @@ import { Post } from '../../../lib/decorators';
 @Controller('/user')
 @ApiUseTags('user')
 @ApiDescription('用户信息')
-@Middleware(Auth)
-@Middleware(Test)
+@Use(Auth())
+@Use(Test())
 export class User {
   @Get('')
   @ApiOperation('用户信息')

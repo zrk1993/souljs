@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import * as KoaRouter from 'koa-router';
+import * as Koa from 'koa';
 import { ExecutionContex } from './execution-contex';
 import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
@@ -74,21 +75,11 @@ export class RouterResolver {
     });
   }
 
-  private getMiddlewares(target: any, propertyKey?: string): Array<Function> {
-    const middlewares: Array<{ middlewareClass: any; args: Array<any> }> =
+  private getMiddlewares(target: any, propertyKey?: string): Array<Koa.Middleware> {
+    const middlewares: Array<Koa.Middleware> =
       Reflect.getMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey) || [];
 
-    return middlewares
-      .map(mid => {
-        const executionContex = new ExecutionContex(
-          this.appInstance,
-          this.responseHandler,
-          mid.middlewareClass,
-          mid.args,
-        );
-        return executionContex.create('pip');
-      })
-      .reverse();
+    return middlewares.reverse();
   }
 
   private koaRouterRegisterHelper(m: string) {

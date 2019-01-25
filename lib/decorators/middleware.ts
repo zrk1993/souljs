@@ -1,6 +1,7 @@
+import * as Koa from 'koa';
 import { METADATA_ROUTER_MIDDLEWARE } from '../constants';
 
-export function Middleware(middlewareClass: any, ...args: Array<any>) {
+export function Use(mid: Koa.Middleware) {
   return function(target: any, propertyKey?: string) {
     if (!Reflect.hasMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey)) {
       Reflect.defineMetadata(METADATA_ROUTER_MIDDLEWARE, [], target, propertyKey);
@@ -8,7 +9,7 @@ export function Middleware(middlewareClass: any, ...args: Array<any>) {
 
     const middlewares: Array<any> = Reflect.getMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey);
 
-    middlewares.push({ middlewareClass, args });
+    middlewares.push(mid);
 
     Reflect.defineMetadata(METADATA_ROUTER_MIDDLEWARE, middlewares, target, propertyKey);
   };
