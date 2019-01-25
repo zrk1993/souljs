@@ -23,10 +23,10 @@ async function validate(ctx: Koa.Context, param: ValidParam, ContextClass: any, 
   let targetValue;
   switch (param.type) {
     case ParamDecoratorType.Body:
-      targetValue = ctx.body;
+      targetValue = ctx.request.body;
       break;
     case ParamDecoratorType.Query:
-      targetValue = ctx.query;
+      targetValue = ctx.request.query;
       break;
     case ParamDecoratorType.Param:
       targetValue = ctx.params;
@@ -50,10 +50,12 @@ async function validate(ctx: Koa.Context, param: ValidParam, ContextClass: any, 
       if (!validator.isString(targetValue)) throw new Error(`请求参数${param.data || ''}必须是字符串`);
       break;
     case Number:
-      if (!validator.isNumber(targetValue)) throw new Error(`请求参数${param.data || ''}必须是数字`);
+      if (!validator.isNumber(targetValue) && !validator.isNumberString(targetValue))
+        throw new Error(`请求参数${param.data || ''}必须是数字`);
       break;
     case Boolean:
-      if (!validator.isBoolean(targetValue)) throw new Error(`请求参数${param.data || ''}必须是布尔值`);
+      if (!validator.isBoolean(targetValue) && !validator.isBooleanString(targetValue))
+        throw new Error(`请求参数${param.data || ''}必须是布尔值`);
       break;
     case Object:
       break;

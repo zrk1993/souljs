@@ -24,5 +24,12 @@ export class ResponseHandler {
 
   forbiddenException(ctx: Koa.Context, error: any) {}
 
-  internalServerErrorException(ctx: Koa.Context, error: any) {}
+  internalServerErrorException(ctx: Koa.Context, error: any) {
+    ctx.status = 500;
+    if (error instanceof Error) {
+      ctx.body = error.message;
+    } else {
+      ctx.body = error;
+    }
+  }
 }

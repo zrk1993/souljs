@@ -97,7 +97,6 @@ function generateApi(controllers: Array<any>): IAPI {
     if (!api.tags.find(i => i.name === tag)) api.tags.push({ name: tag, description });
 
     requestMappings.forEach(prop => {
-
       const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller.prototype, prop),
@@ -112,57 +111,77 @@ function generateApi(controllers: Array<any>): IAPI {
         tags: [tag],
         produces: ['application/json'],
         parameters: [],
-        responses: {default: {description: "successful operation"}}
+        responses: { default: { description: 'successful operation' } },
       };
 
       const types: Array<any> = Reflect.getMetadata('design:paramtypes', Controller.prototype, prop);
 
       const shouldValidParams: Array<ValidParam> = (
         Reflect.getMetadata(METADATA_ROUTER_PARAMS, Controller.prototype, prop) || []
-      )
-        .map((item: ValidParam) => {
-          item.paramtype = types[item.index];
-          return item;
-        })
-        .filter((item: ValidParam) => {
-          return (
-            item.type === ParamDecoratorType.Body ||
-            item.type === ParamDecoratorType.Query ||
-            item.type === ParamDecoratorType.Param
-          );
-        })
-        .filter((item: ValidParam) => {
-          const types = [Object];
-          return !types.some(t => item.paramtype === t);
+      ).map((item: ValidParam) => {
+        item.paramtype = types[item.index];
+        return item;
+      });
+
+      const queryOrPathParams = shouldValidParams.filter(
+        item => item.type === ParamDecoratorType.Query || item.type === ParamDecoratorType.Param,
+      );
+
+      queryOrPathParams.forEach(param => {
+        const required = Reflect.hasMetadata(
+          METADATA_ROUTER_PARAM_OPTIONAL,
+          Controller.prototype,
+          `${prop}_${param.index}`,
+        );
+        method.parameters.push({
+          name: param.data,
+          in: param.type.toLocaleLowerCase(),
+          type: (param.paramtype ? param.paramtype.name : '').toLowerCase(),
+          required,
+          description: param.data || '',
         });
+      });
 
-        shouldValidParams.forEach((param) => {
-
-          const required = Reflect.hasMetadata(METADATA_ROUTER_PARAM_OPTIONAL, Controller.prototype, `${prop}_${param.index}`)
-
+      const bodyParams = shouldValidParams.filter(item => item.type === ParamDecoratorType.Body);
+      if (bodyParams.length > 0) {
+        const properties: { [x: string]: any } = {};
+        bodyParams.forEach(param => {
           const types = [String, Number, Boolean, Object, Array, undefined];
 
           if (types.some(t => t === param.paramtype)) {
-            method.parameters.push({
-              name: param.data,
-              in: param.type,
-              type: typeof param.paramtype,
-              required,
-              description: 'key',
-            });
+            if (param.data) {
+              if (param.paramtype === Array) {
+                Object.assign(properties, { [param.data]: { type: param.paramtype.name.toLowerCase(), items: { type: 'object' } } });
+              } else {
+                Object.assign(properties, { [param.data]: { type: param.paramtype.name.toLowerCase() } });
+              }
+            }
           } else {
-            const validationMetadatas = getFromContainer(MetadataStorage).getTargetValidationMetadatas(param.paramtype.constructor, param.paramtype);
-            validationMetadatas.forEach((item: any) => {
-              method.parameters.push({
-                name: item.propertyName,
-                in: param.type,
-                type: 'string',
-                description: item.type,
-              });
+            const fields = getFiledFromClass(param.paramtype);
+
+            fields.forEach(field => {
+              let target = properties;
+              if (param.data) {
+                if (!properties[param.data]) {
+                  properties[param.data] = { type: 'object', properties: {} };
+                }
+                target = properties[param.data].properties;
+              }
+              Object.assign(target, { [field.name]: { type: field.type } });
             });
           }
         });
 
+        method.parameters.push({
+          name: 'body',
+          in: 'body',
+          type: 'object',
+          description: 'body',
+          schema: {
+            properties,
+          },
+        });
+      }
       api.paths[requestPath] = { [requestMethod.toLowerCase()]: method };
     });
   });
@@ -177,4 +196,21 @@ function getRequestMappings(router: any): Array<string> {
       Reflect.hasMetadata(METADATA_ROUTER_METHOD, router, prop)
     );
   });
+}
+
+interface IField {
+  name: string;
+  type: string;
+}
+function getFiledFromClass(paramtype: any): Array<IField> {
+  const fields: Array<IField> = [];
+  const validationMetadatas = getFromContainer(MetadataStorage).getTargetValidationMetadatas(
+    paramtype.constructor,
+    paramtype,
+  );
+  validationMetadatas.forEach((item: any) => {
+    const type = Reflect.getMetadata('design:type', paramtype.prototype, item.propertyName);
+    fields.push({ name: item.propertyName, type: type ? type.name.toLocaleLowerCase() : 'any' });
+  });
+  return fields;
 }

@@ -1,23 +1,11 @@
 import {
-  Application,
   Controller,
   Get,
   Middleware,
-  IRequest,
-  Request,
-  IResponse,
-  Response,
   Optional,
   Render,
-  ICtx,
-  Ctx,
-  Next,
-  Param,
   Query,
   Body,
-  Headers,
-  ApplicationInstance,
-  KoaInstance,
   ApiOperation,
   ApiUseTags,
   ApiDescription,
@@ -28,9 +16,16 @@ import { Test } from '../middleware/Test';
 
 import { ResultUtils } from '../utils';
 
-import { IsEmail, IsNotEmpty } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
+import { Post } from '../../../lib/decorators';
 
 class CreateUserDto {
+  @IsString()
+  name: string;
+  @IsNumber()
+  age: number;
+  @IsBoolean()
+  isvip: boolean;
   @IsNotEmpty()
   password: string;
 }
@@ -48,9 +43,8 @@ export class User {
     return { content: 'asdasdasdasd' };
   }
 
-  @Get('/info')
-  @Middleware(Auth)
-  info(@Query() query: CreateUserDto, @Optional() @Body('s') s: String = 'hi') {
-    return ResultUtils.ok(query);
+  @Post('/api4')
+  api4(@Body('uu') user: Array<string>) {
+    return ResultUtils.ok();
   }
 }
