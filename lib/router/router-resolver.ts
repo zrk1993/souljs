@@ -1,12 +1,16 @@
 import 'reflect-metadata';
-import * as Path from 'path';
 import * as KoaRouter from 'koa-router';
-import * as Koa from 'koa';
 import { ExecutionContex } from './execution-contex';
-import { validateParams } from './validate-params';
 import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
-import { METADATA_ROUTER_METHOD, METADATA_ROUTER_PATH, METADATA_ROUTER_MIDDLEWARE } from '../constants';
+import { ParamValidate } from '../middlewares/param-validate';
+import {
+  METADATA_ROUTER_METHOD,
+  METADATA_ROUTER_PATH,
+  METADATA_ROUTER_MIDDLEWARE,
+  METADATA_ROUTER_BODY_SCHAME,
+  METADATA_ROUTER_QUERY_SCHAME,
+} from '../constants';
 
 export class RouterResolver {
   private readonly routers: Array<any>;
@@ -50,12 +54,17 @@ export class RouterResolver {
 
       const propMiddlewares = this.getMiddlewares(Router.prototype, prop);
 
-      const validateParamsPip = validateParams(Router, prop);
+      const allMiddlewares = [].concat(routerMiddlewares).concat(propMiddlewares);
 
-      const allMiddlewares = []
-        .concat(routerMiddlewares)
-        .concat(propMiddlewares)
-        .concat([validateParamsPip]);
+      const validQuerySchame = Reflect.getMetadata(METADATA_ROUTER_QUERY_SCHAME, Router.prototype, prop);
+      if (validQuerySchame) {
+        allMiddlewares.push(ParamValidate(validQuerySchame, { type: 'query' }));
+      }
+
+      const validBodySchame = Reflect.getMetadata(METADATA_ROUTER_BODY_SCHAME, Router.prototype, prop);
+      if (validBodySchame) {
+        allMiddlewares.push(ParamValidate(validBodySchame, { type: 'body' }));
+      }
 
       console.info('应用中间件 %s', allMiddlewares.map(i => i.lable).join(' -> '));
 

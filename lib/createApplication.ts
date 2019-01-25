@@ -4,7 +4,7 @@ import * as hbs from 'koa-hbs';
 import * as koaStatic from 'koa-static';
 import * as mount from 'koa-mount';
 import { Application, ApplicationOptions } from './application';
-import { useSwaggerApi } from './swagger-api';
+import { useSwaggerApi } from './middlewares/swagger-doc';
 
 export async function createApplication(options: ApplicationOptions): Promise<Application> {
   const app = new Application(options);

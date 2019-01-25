@@ -2,33 +2,21 @@ import {
   Controller,
   Get,
   Middleware,
-  Optional,
   Render,
   Query,
   Body,
   ApiOperation,
+  BodySchame,
+  QuerySchame,
   ApiUseTags,
   ApiDescription,
 } from '../../../index';
 
+import * as joi from 'joi';
 import { Auth } from '../middleware/Auth';
 import { Test } from '../middleware/Test';
-
 import { ResultUtils } from '../utils';
-
-import { IsEmail, IsNotEmpty, IsString, IsBoolean, IsNumber } from 'class-validator';
 import { Post } from '../../../lib/decorators';
-
-class CreateUserDto {
-  @IsString()
-  name: string;
-  @IsNumber()
-  age: number;
-  @IsBoolean()
-  isvip: boolean;
-  @IsNotEmpty()
-  password: string;
-}
 
 @Controller('/user')
 @ApiUseTags('user')
@@ -44,7 +32,21 @@ export class User {
   }
 
   @Post('/api4')
-  api4(@Body('uu') user: Array<string>) {
-    return ResultUtils.ok();
+  @QuerySchame(
+    joi.object().keys({
+      id: joi.string(),
+      name: joi.number(),
+      is: joi.boolean().required(),
+    }),
+  )
+  @BodySchame(
+    joi.object().keys({
+      name: joi.string().required(),
+      code: joi.string().required(),
+      desc: joi.string(),
+    }),
+  )
+  api4(@Body() body: any) {
+    return ResultUtils.ok(body);
   }
 }
