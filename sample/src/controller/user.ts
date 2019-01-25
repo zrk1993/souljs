@@ -3,9 +3,7 @@ import {
   Get,
   Use,
   Render,
-  Query,
   Body,
-  ApiOperation,
   BodySchame,
   QuerySchame,
   ApiUseTags,
@@ -24,8 +22,8 @@ import { Post } from '../../../lib/decorators';
 @Use(Auth())
 @Use(Test())
 export class User {
-  @Get('')
-  @ApiOperation('用户信息')
+  @Get()
+  @ApiDescription('用户信息')
   @Render('user')
   index() {
     return { content: 'asdasdasdasd' };

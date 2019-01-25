@@ -12,7 +12,6 @@ import {
   METADATA_ROUTER_METHOD,
   METADATA_ROUTER_PATH,
   METADATA_API_USETAGS,
-  METADATA_API_OPERATION,
   METADATA_API_DESCRIPTION,
 } from '../constants';
 
@@ -97,11 +96,12 @@ function generateApi(controllers: Array<any>) {
 
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Controller.prototype, prop);
 
-      const operation = Reflect.getMetadata(METADATA_API_OPERATION, Controller.prototype, prop);
+      const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller) || '';
+      const mtag = Reflect.getMetadata(METADATA_API_USETAGS, Controller.prototype, prop);
 
       const method: IPath = {
-        summary: operation,
-        tags: [tag],
+        summary: description,
+        tags: [mtag||tag],
         produces: ['application/json', 'application/x-www-form-urlencoded'],
         parameters: [],
         responses: { default: { description: 'successful operation' } },
