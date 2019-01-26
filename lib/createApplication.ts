@@ -19,13 +19,13 @@ export interface ApplicationOptions {
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
   session?: KoaSession.opts | boolean;
-  hbs?: { viewPath: string } | boolean;
+  hbs?: { viewPath?: string } | boolean;
 }
 
 export async function createApplication(
   root: string,
   globsOrControllers: any,
-  options?: ApplicationOptions,
+  options: ApplicationOptions = {},
 ): Promise<Application> {
 
   debug('application starting ...');

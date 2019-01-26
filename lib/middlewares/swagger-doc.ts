@@ -19,7 +19,30 @@ const convert = require('joi-to-json-schema');
 
 export interface ISwaggerOption {
   url: string;
+  title?: string;
   prefix?: string;
+}
+
+export function useSwaggerApi(app: Application, swaggerConfig: ISwaggerOption) {
+  const pathToSwaggerUi = SwaggerUIDist.getAbsoluteFSPath();
+  app.getKoaInstance().use(
+    mount((swaggerConfig.prefix || '/api') + '/index.html', async (ctx: Koa.Context) => {
+      const d: string = await new Promise((resolve, reject) => {
+        fs.readFile(path.join(pathToSwaggerUi, 'index.html'), (err, data) => {
+          if (err) return reject(err.message);
+          resolve(data.toString());
+        });
+      });
+      ctx.type = 'text/html';
+      ctx.body = d.replace(/url:\s*?"\S*"/gi, `url:"${swaggerConfig.url}"`);
+    }),
+  );
+  app.getKoaInstance().use(
+    mount(swaggerConfig.url, (ctx: Koa.Context) => {
+      ctx.body = generateApi(app.getRouters(), swaggerConfig);
+    }),
+  );
+  app.getKoaInstance().use(mount(swaggerConfig.prefix || '/api', koaStatic(pathToSwaggerUi)));
 }
 
 interface IAPI {
@@ -41,28 +64,6 @@ interface IPath {
   parameters?: Array<any>;
 }
 
-export function useSwaggerApi(app: Application, swaggerConfig: ISwaggerOption) {
-  const pathToSwaggerUi = SwaggerUIDist.getAbsoluteFSPath();
-  app.getKoaInstance().use(
-    mount((swaggerConfig.prefix || '/api') + '/index.html', async (ctx: Koa.Context) => {
-      const d: string = await new Promise((resolve, reject) => {
-        fs.readFile(path.join(pathToSwaggerUi, 'index.html'), (err, data) => {
-          if (err) return reject(err.message);
-          resolve(data.toString());
-        });
-      });
-      ctx.type = 'text/html';
-      ctx.body = d.replace(/url:\s*?"\S*"/gi, `url:"${swaggerConfig.url}"`);
-    }),
-  );
-  app.getKoaInstance().use(
-    mount(swaggerConfig.url, (ctx: Koa.Context) => {
-      ctx.body = generateApi(app.getRouters());
-    }),
-  );
-  app.getKoaInstance().use(mount(swaggerConfig.prefix || '/api', koaStatic(pathToSwaggerUi)));
-}
-
 const api: IAPI = {
   swagger: '2.0',
   info: {
@@ -79,7 +80,14 @@ const api: IAPI = {
   tags: [],
 };
 
-function generateApi(controllers: Array<any>) {
+let generated = false;
+
+function generateApi(controllers: Array<any>, swaggerConfig: ISwaggerOption) {
+
+  if (generated) return api;
+
+  api.info.title = swaggerConfig.title || '接口文档';
+
   controllers.forEach(Controller => {
     const requestMappings = getRequestMappings(Controller.prototype);
     const tag = Reflect.getMetadata(METADATA_API_USETAGS, Controller);
@@ -136,6 +144,8 @@ function generateApi(controllers: Array<any>) {
       api.paths[requestPath] = { [requestMethod.toLowerCase()]: method };
     });
   });
+
+  generated = true;
   return api;
 }
 
