@@ -30,17 +30,12 @@ export class ExecutionContex {
     return async (ctx: Koa.Context, next: Function) => {
       const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
 
-      try {
-        const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
+      const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
-        if (renderViewPath) {
-          await this.responseHandler.responseHtml(ctx, response, renderViewPath);
-        } else {
-          this.responseHandler.responseJson(ctx, response);
-        }
-      } catch (error) {
-        console.error('请求处理异常Error: %O', error);
-        this.responseHandler.internalServerErrorException(ctx, error);
+      if (renderViewPath) {
+        await this.responseHandler.responseHtml(ctx, response, renderViewPath);
+      } else {
+        this.responseHandler.responseJson(ctx, response);
       }
     };
   }

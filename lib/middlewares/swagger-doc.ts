@@ -67,8 +67,7 @@ const api: IAPI = {
   swagger: '2.0',
   info: {
     title: '接口文档',
-    description: 'Test API',
-    // version: '1.0.0',
+    version: '1.0.0',
   },
   //  the domain of the service
   //  host: 127.0.0.1:3457
@@ -96,12 +95,12 @@ function generateApi(controllers: Array<any>) {
 
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Controller.prototype, prop);
 
-      const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller) || '';
+      const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller.prototype, prop) || '';
       const mtag = Reflect.getMetadata(METADATA_API_USETAGS, Controller.prototype, prop);
 
       const method: IPath = {
         summary: description,
-        tags: [mtag||tag],
+        tags: [mtag || tag],
         produces: ['application/json', 'application/x-www-form-urlencoded'],
         parameters: [],
         responses: { default: { description: 'successful operation' } },

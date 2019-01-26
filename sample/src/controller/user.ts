@@ -21,15 +21,16 @@ import { Post } from '../../../lib/decorators';
 @ApiDescription('用户信息')
 @Use(Auth())
 @Use(Test())
-export class User {
+export default class User {
   @Get()
-  @ApiDescription('用户信息')
+  @ApiDescription('用户信息1')
   @Render('user')
   index() {
     return { content: 'asdasdasdasd' };
   }
 
   @Post('/api4')
+  @ApiDescription('用户信息2')
   @QuerySchame(
     joi.object().keys({
       id: joi.string(),
