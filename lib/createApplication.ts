@@ -21,7 +21,6 @@ export interface ApplicationOptions {
   session?: KoaSession.opts | boolean;
   hbs?: { viewPath?: string } | boolean;
   helmet?: object | boolean;
-  etag?: boolean;
 }
 
 export async function createApplication(
@@ -42,25 +41,23 @@ export async function createApplication(
     app.use(helmet());
   }
 
-  if (options.etag !== false) {
-    debug('应用全局中间件 %s', 'koa-etag');
-    app.use(koaConditionalGet());
-    app.use(koaEtag());
-  }
-
   if (options.staticAssets !== false) {
     const staticAssetsOptions = Object.assign(
       {
         root: 'public',
-        prefix: '/',
+        prefix: '/static',
         maxage: 86400000,
       },
       options.staticAssets,
     );
-    debug('应用全局中间件 %s 资源目录 %s', 'koa-static', staticAssetsOptions.root);
+    debug('应用全局中间件 %s', 'koa-etag');
+    app.use(mount(staticAssetsOptions.prefix, koaConditionalGet()));
+    app.use(mount(staticAssetsOptions.prefix, koaEtag()));
+
+    debug('应用全局中间件 %s 资源目录 %s, prefix: %s', 'koa-static', staticAssetsOptions.root, staticAssetsOptions.prefix);
     app.use(
       mount(
-        staticAssetsOptions.prefix || '/',
+        staticAssetsOptions.prefix,
         koaStatic(Path.join(root, staticAssetsOptions.root), staticAssetsOptions),
       ),
     );

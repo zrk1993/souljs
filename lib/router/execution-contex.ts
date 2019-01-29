@@ -32,6 +32,8 @@ export class ExecutionContex {
 
       const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
+      if (response === undefined) return;
+
       if (renderViewPath) {
         await this.responseHandler.responseHtml(ctx, response, renderViewPath);
       } else {

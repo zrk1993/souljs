@@ -1,5 +1,6 @@
 import * as joi from 'joi';
 import * as Koa from 'koa';
+import { PARAM_VALIDATIONE_RROR } from '../constants';
 
 /**
  * Return middleware that handle exceptions in Koa.
@@ -25,6 +26,7 @@ export function ParamValidate(schema: joi.AnySchema, option: { type: string }): 
       }
       await next();
     } else {
+      result.error.name = PARAM_VALIDATIONE_RROR;
       throw result.error;
     }
   };

@@ -11,10 +11,11 @@ import {
 } from '../../../index';
 
 import * as joi from 'joi';
+import * as Koa from 'koa';
 import { Auth } from '../middleware/Auth';
 import { Test } from '../middleware/Test';
 import { ResultUtils } from '../utils';
-import { Post } from '../../../lib/decorators';
+import { Post, Ctx } from '../../../lib/decorators';
 
 @Controller('/user')
 @ApiUseTags('user')
@@ -25,12 +26,6 @@ export default class User {
   @Get()
   @ApiDescription('用户信息1')
   @Render('user')
-  @QuerySchame(
-    joi.object().keys({
-      is: joi.boolean().required(),
-      es: joi.boolean().required(),
-    }),
-  )
   index() {
     return { content: 'asdasdasdasd' };
   }
@@ -53,5 +48,10 @@ export default class User {
   )
   api4(@Body() body: any) {
     return ResultUtils.ok(body());
+  }
+
+  @Get('/hh')
+  api5(@Ctx() ctx: Koa.Context, ) {
+    ctx.redirect('https://www.baidu.com');
   }
 }
