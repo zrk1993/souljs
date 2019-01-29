@@ -25,6 +25,12 @@ export default class User {
   @Get()
   @ApiDescription('用户信息1')
   @Render('user')
+  @QuerySchame(
+    joi.object().keys({
+      is: joi.boolean().required(),
+      es: joi.boolean().required(),
+    }),
+  )
   index() {
     return { content: 'asdasdasdasd' };
   }
@@ -46,6 +52,6 @@ export default class User {
     }),
   )
   api4(@Body() body: any) {
-    return ResultUtils.ok(body);
+    return ResultUtils.ok(body());
   }
 }

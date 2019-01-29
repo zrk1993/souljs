@@ -42,7 +42,14 @@ export function useSwaggerApi(app: Application, swaggerConfig: ISwaggerOption) {
       ctx.body = generateApi(app.getRouters(), swaggerConfig);
     }),
   );
-  app.getKoaInstance().use(mount(swaggerConfig.prefix || '/api', koaStatic(pathToSwaggerUi)));
+  app.getKoaInstance().use(
+    mount(
+      swaggerConfig.prefix || '/api',
+      koaStatic(pathToSwaggerUi, {
+        maxage: 8640000,
+      }),
+    ),
+  );
 }
 
 interface IAPI {
@@ -83,7 +90,6 @@ const api: IAPI = {
 let generated = false;
 
 function generateApi(controllers: Array<any>, swaggerConfig: ISwaggerOption) {
-
   if (generated) return api;
 
   api.info.title = swaggerConfig.title || '接口文档';
