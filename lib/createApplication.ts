@@ -41,7 +41,7 @@ export async function createApplication(
     app.use(helmet());
   }
 
-  if (options.staticAssets !== false) {
+  if (options.staticAssets) {
     const staticAssetsOptions = Object.assign(
       {
         root: 'public',
@@ -94,7 +94,7 @@ export async function createApplication(
     app.use(KoaSession(sessionOptions, app.getKoaInstance()));
   }
 
-  if (options.hbs !== false) {
+  if (options.hbs) {
     const hbsOptions = Object.assign(
       {
         viewPath: './views',
