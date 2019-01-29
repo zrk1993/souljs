@@ -1,4 +1,4 @@
-export { createApplication } from './lib/createApplication';
+export * from './lib/createApplication';
 
 export * from './lib/application';
 
