@@ -25,12 +25,15 @@ export interface ApplicationOptions {
 
 export async function createApplication(
   root: string,
-  globsOrControllers: any,
+  globsOrControllers: string | any[],
   options: ApplicationOptions = {},
 ): Promise<Application> {
   debug('application starting ...');
 
-  const routers = (await globs(root, globsOrControllers)).map(loadPackage).map(m => m.default);
+  const routers =
+    typeof globsOrControllers === 'string'
+      ? (await globs(root, globsOrControllers)).map(loadPackage).map(m => m.default)
+      : globsOrControllers;
 
   debug('find %d routes', routers.length);
 

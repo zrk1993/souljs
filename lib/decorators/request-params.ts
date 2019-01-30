@@ -30,12 +30,6 @@ export const Query = createParamDecorator(ParamDecoratorType.Query);
 
 export const Body = createParamDecorator(ParamDecoratorType.Body);
 
-export const Session = createParamDecorator(ParamDecoratorType.Session);
-
-export const Headers = createParamDecorator(ParamDecoratorType.Headers);
-
-export const Cookies = createParamDecorator(ParamDecoratorType.Cookies);
-
 export const ApplicationInstance = createParamDecorator(ParamDecoratorType.ApplicationInstance);
 
 export const KoaInstance = createParamDecorator(ParamDecoratorType.KoaInstance);

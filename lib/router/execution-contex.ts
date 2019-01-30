@@ -74,12 +74,6 @@ export class ExecutionContex {
         return param.data && ctx.request.query ? ctx.request.query[param.data] : ctx.request.query;
       case ParamDecoratorType.Body:
         return param.data && ctx.request.body ? ctx.request.body[param.data] : ctx.request.body;
-      case ParamDecoratorType.Session:
-        return ctx.session;
-      case ParamDecoratorType.Headers:
-        return ctx.request.headers;
-      case ParamDecoratorType.Cookies:
-        return ctx.cookies;
       case ParamDecoratorType.ApplicationInstance:
         return this.appInstance;
       case ParamDecoratorType.KoaInstance:

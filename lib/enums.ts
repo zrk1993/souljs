@@ -5,9 +5,6 @@ export enum ParamDecoratorType {
   Next = 'Next',
   Query = 'Query',
   Body = 'Body',
-  Session = 'Session',
-  Cookies = 'Cookies',
-  Headers = 'Headers',
   KoaInstance = 'KoaInstance',
   ApplicationInstance = 'ApplicationInstance',
 }

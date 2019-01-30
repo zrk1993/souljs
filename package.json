@@ -1,12 +1,12 @@
 {
   "name": "souljs",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "A nodejs framework for building concise and decorative applications written by typescript",
   "main": "dist/index.js",
   "scripts": {
     "format": "prettier *.ts **/*.ts **/**/*.ts **/**/**/*.ts  --ignore-path ./.prettierignore --write && git status",
     "lint": "tslint -p tsconfig.json -c tslint.json",
-    "publish": "npm publish",
+    "publish": "npm run build && npm publish",
     "build": "tsc -p tsconfig.build.json",
     "sample": "ts-node sample/src/main.ts"
   },
