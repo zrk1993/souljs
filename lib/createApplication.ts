@@ -41,7 +41,7 @@ export async function createApplication(
     app.use(helmet());
   }
 
-  if (options.staticAssets) {
+  if (options.staticAssets !== false) {
     const staticAssetsOptions = Object.assign(
       {
         root: 'public',
@@ -54,12 +54,14 @@ export async function createApplication(
     app.use(mount(staticAssetsOptions.prefix, koaConditionalGet()));
     app.use(mount(staticAssetsOptions.prefix, koaEtag()));
 
-    debug('应用全局中间件 %s 资源目录 %s, prefix: %s', 'koa-static', staticAssetsOptions.root, staticAssetsOptions.prefix);
+    debug(
+      '应用全局中间件 %s 资源目录 %s, prefix: %s',
+      'koa-static',
+      staticAssetsOptions.root,
+      staticAssetsOptions.prefix,
+    );
     app.use(
-      mount(
-        staticAssetsOptions.prefix,
-        koaStatic(Path.join(root, staticAssetsOptions.root), staticAssetsOptions),
-      ),
+      mount(staticAssetsOptions.prefix, koaStatic(Path.join(root, staticAssetsOptions.root), staticAssetsOptions)),
     );
   }
 
@@ -81,12 +83,8 @@ export async function createApplication(
       {
         key: 'soul:sess',
         maxAge: 86400000,
-        autoCommit: true /** (boolean) automatically commit headers (default true) */,
-        overwrite: true /** (boolean) can overwrite or not (default true) */,
-        httpOnly: true /** (boolean) httpOnly or not (default true) */,
-        signed: true /** (boolean) signed or not (default true) */,
-        rolling: false /** (boolean) Force a session identifier cookie to be set on every response. The expiration is reset to the original maxAge, resetting the expiration countdown. (default is false) */,
-        renew: false /** (boolean) renew session when session is nearly expired, so we can always keep user logged in. (default is false)*/,
+        httpOnly: true,
+        renew: false,
       },
       options.session,
     );
@@ -94,7 +92,7 @@ export async function createApplication(
     app.use(KoaSession(sessionOptions, app.getKoaInstance()));
   }
 
-  if (options.hbs) {
+  if (options.hbs !== false) {
     const hbsOptions = Object.assign(
       {
         viewPath: './views',

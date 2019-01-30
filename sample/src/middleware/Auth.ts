@@ -1,8 +1,7 @@
 import * as Koa from 'koa';
 
 export function Auth(): Koa.Middleware {
-  return async function auth(ctx: Koa.Context, next: Function) {
-    console.log('auth');
+  return async function auth(ctx: Koa.Context, next: () => void) {
     await next();
   };
 }

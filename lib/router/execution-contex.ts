@@ -16,7 +16,7 @@ export class ExecutionContex {
     appInstance: Application,
     responseHandler: ResponseHandler,
     ContextClass: any,
-    ContextClassArgs: Array<any> = [],
+    ContextClassArgs: any[] = [],
   ) {
     this.appInstance = appInstance;
     this.ContextClass = ContextClass;
@@ -27,12 +27,14 @@ export class ExecutionContex {
   create(propertyKey: string): KoaRouter.IMiddleware {
     const renderViewPath = Reflect.getMetadata(METADATA_ROUTER_RENDER_VIEW, this.ContextClass.prototype, propertyKey);
 
-    return async (ctx: Koa.Context, next: Function) => {
-      const params: Array<any> = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
+    return async (ctx: Koa.Context, next: () => void) => {
+      const params: any[] = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
 
       const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
-      if (response === undefined) return;
+      if (response === undefined) {
+        return;
+      }
 
       if (renderViewPath) {
         await this.responseHandler.responseHtml(ctx, response, renderViewPath);
@@ -42,9 +44,9 @@ export class ExecutionContex {
     };
   }
 
-  private getRouterHandlerParams(ctx: Koa.Context, next: Function, propertyKey: string): Array<any> {
-    const results: Array<any> = [];
-    const routerParams: Array<any> =
+  private getRouterHandlerParams(ctx: Koa.Context, next: () => void, propertyKey: string): any[] {
+    const results: any[] = [];
+    const routerParams: any[] =
       Reflect.getMetadata(METADATA_ROUTER_PARAMS, this.ContextClass.prototype, propertyKey) || [];
 
     routerParams.forEach((param: { index: number; type: ParamDecoratorType; data: any }) => {
@@ -57,7 +59,7 @@ export class ExecutionContex {
   private convertParamDecorator(
     param: { index: number; type: ParamDecoratorType; data: any },
     ctx: Koa.Context,
-    next: Function,
+    next: () => void,
   ): any {
     switch (param.type) {
       case ParamDecoratorType.Request:

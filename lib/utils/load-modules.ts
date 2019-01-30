@@ -1,9 +1,9 @@
 import * as Path from 'path';
 import * as glob from 'glob';
 
-export async function globs(root: string, globs: string, options?: glob.IOptions): Promise<Array<string>> {
+export async function globs(root: string, globsRex: string, options?: glob.IOptions): Promise<string[]> {
   return new Promise((resolve, reject) => {
-    glob(Path.join(root, globs), options, function(er, files) {
+    glob(Path.join(root, globsRex), options, (er, files) => {
       // files is an array of filenames.
       // If the `nonull` option is set, and nothing
       // was found, then files is ["**/*.js"]

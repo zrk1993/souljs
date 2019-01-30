@@ -1,10 +1,11 @@
 {
   "name": "souljs",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "A nodejs framework for building concise and decorative applications written by typescript",
   "main": "dist/index.js",
   "scripts": {
     "format": "prettier *.ts **/*.ts **/**/*.ts **/**/**/*.ts  --ignore-path ./.prettierignore --write && git status",
+    "lint": "tslint -p tsconfig.json -c tslint.json",
     "publish": "npm publish",
     "build": "tsc -p tsconfig.build.json",
     "sample": "ts-node sample/src/main.ts"
@@ -40,6 +41,7 @@
     "@types/swagger-ui-dist": "^3.0.0",
     "prettier": "1.15.3",
     "ts-node": "^7.0.1",
+    "tslint": "5.12.1",
     "typescript": "^3.2.2"
   },
   "dependencies": {

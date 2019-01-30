@@ -4,7 +4,7 @@ async function main() {
   const app = await createApplication(__dirname, 'controller/*.ts');
 
   app.getKoaInstance().on('error', (err, ctx) => {
-    console.error(err);
+    ctx.body = err;
   });
 
   app.use(async (ctx, next) => {
@@ -17,14 +17,12 @@ async function main() {
   app.listen(3001);
 }
 
-process.on('uncaughtException', error => {
-  // TODO Youch
-  console.error('uncaughtException', error);
+process.on('uncaughtException', () => {
+  process.exit(1);
 });
 
-process.on('unhandledRejection', error => {
-  // TODO Youch
-  console.error('unhandledRejection', error);
+process.on('unhandledRejection', () => {
+  process.exit(1);
 });
 
 main();

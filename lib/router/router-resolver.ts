@@ -17,12 +17,12 @@ import {
 const debug = Debug('soul:RouterResolver');
 
 export class RouterResolver {
-  private readonly routers: Array<any>;
+  private readonly routers: any[];
   private readonly appInstance: Application;
   private readonly koaRouter: KoaRouter;
   private readonly responseHandler: ResponseHandler;
 
-  constructor(routers: Array<any>, appInstance: Application, options?: Object) {
+  constructor(routers: any[], appInstance: Application, options?: object) {
     this.routers = routers;
     this.appInstance = appInstance;
     this.koaRouter = new KoaRouter();
@@ -78,9 +78,8 @@ export class RouterResolver {
     });
   }
 
-  private getMiddlewares(target: any, propertyKey?: string): Array<Koa.Middleware> {
-    const middlewares: Array<Koa.Middleware> =
-      Reflect.getMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey) || [];
+  private getMiddlewares(target: any, propertyKey?: string): Koa.Middleware[] {
+    const middlewares: Koa.Middleware[] = Reflect.getMetadata(METADATA_ROUTER_MIDDLEWARE, target, propertyKey) || [];
 
     return middlewares.reverse();
   }
@@ -94,7 +93,7 @@ export class RouterResolver {
     }
   }
 
-  private getRequestMappings(router: any): Array<string> {
+  private getRequestMappings(router: any): string[] {
     return Object.getOwnPropertyNames(router).filter(prop => {
       return (
         prop !== 'constructor' &&

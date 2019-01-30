@@ -51,7 +51,7 @@ export default class User {
   }
 
   @Get('/hh')
-  api5(@Ctx() ctx: Koa.Context, ) {
+  api5(@Ctx() ctx: Koa.Context) {
     ctx.redirect('https://www.baidu.com');
   }
 }

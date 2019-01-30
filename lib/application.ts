@@ -8,9 +8,9 @@ const debug = Debug('soul:Application');
 export class Application {
   private readonly httpServer: http.Server;
   private readonly koaInstance: Koa;
-  private readonly routers: Array<any>;
+  private readonly routers: any[];
 
-  constructor(routers: Array<any>) {
+  constructor(routers: any[]) {
     this.routers = routers;
     this.koaInstance = new Koa();
     this.httpServer = this.createHttpServer();
@@ -43,7 +43,7 @@ export class Application {
     return this.httpServer;
   }
 
-  getRouters(): Array<any> {
+  getRouters(): any[] {
     return this.routers;
   }
 }

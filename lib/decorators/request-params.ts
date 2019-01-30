@@ -3,9 +3,9 @@ import { ParamDecoratorType } from '../enums';
 import { METADATA_ROUTER_PARAMS } from '../constants';
 
 function createParamDecorator(paramDecoratorType: ParamDecoratorType) {
-  return function(data?: any) {
-    return function(target: Object, propertyKey: string | symbol, parameterIndex: number) {
-      const routerParams: Array<any> = Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey) || [];
+  return (data?: any) => {
+    return (target: object, propertyKey: string | symbol, parameterIndex: number) => {
+      const routerParams: any[] = Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey) || [];
 
       routerParams.push({
         type: paramDecoratorType,

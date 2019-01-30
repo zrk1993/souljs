@@ -6,6 +6,7 @@ import * as mount from 'koa-mount';
 import * as koaStatic from 'koa-static';
 import * as SwaggerUIDist from 'swagger-ui-dist';
 import { Application } from '../application';
+import { globs, loadPackage } from '../utils/load-modules';
 import {
   METADATA_ROUTER_QUERY_SCHAME,
   METADATA_ROUTER_BODY_SCHAME,
@@ -15,7 +16,7 @@ import {
   METADATA_API_DESCRIPTION,
 } from '../constants';
 
-const convert = require('joi-to-json-schema');
+const convert = loadPackage('joi-to-json-schema');
 
 export interface ISwaggerOption {
   url: string;
@@ -29,7 +30,9 @@ export function useSwaggerApi(app: Application, swaggerConfig: ISwaggerOption) {
     mount((swaggerConfig.prefix || '/api') + '/index.html', async (ctx: Koa.Context) => {
       const d: string = await new Promise((resolve, reject) => {
         fs.readFile(path.join(pathToSwaggerUi, 'index.html'), (err, data) => {
-          if (err) return reject(err.message);
+          if (err) {
+            return reject(err.message);
+          }
           resolve(data.toString());
         });
       });
@@ -57,18 +60,18 @@ interface IAPI {
   paths: { [prop: string]: { [prop: string]: IPath } };
   info: any;
   basePath: string;
-  consumes: Array<string>;
-  produces: Array<string>;
-  schemes: Array<string>;
+  consumes: string[];
+  produces: string[];
+  schemes: string[];
   tags: Array<{ name: string; description?: string }>;
 }
 
 interface IPath {
   summary: string;
-  tags: Array<string>;
-  produces?: Array<string>;
+  tags: string[];
+  produces?: string[];
   responses?: any;
-  parameters?: Array<any>;
+  parameters?: any[];
 }
 
 const api: IAPI = {
@@ -89,17 +92,22 @@ const api: IAPI = {
 
 let generated = false;
 
-function generateApi(controllers: Array<any>, swaggerConfig: ISwaggerOption) {
-  if (generated) return api;
+function generateApi(controllers: any[], swaggerConfig: ISwaggerOption) {
+  if (generated) {
+    return api;
+  }
 
   api.info.title = swaggerConfig.title || '接口文档';
 
   controllers.forEach(Controller => {
     const requestMappings = getRequestMappings(Controller.prototype);
     const tag = Reflect.getMetadata(METADATA_API_USETAGS, Controller);
+
     const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller) || '';
 
-    if (!api.tags.find(i => i.name === tag)) api.tags.push({ name: tag, description });
+    if (!api.tags.find(i => i.name === tag)) {
+      api.tags.push({ name: tag, description });
+    }
 
     requestMappings.forEach(prop => {
       const requestPath: string = [
@@ -109,11 +117,11 @@ function generateApi(controllers: Array<any>, swaggerConfig: ISwaggerOption) {
 
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Controller.prototype, prop);
 
-      const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller.prototype, prop) || '';
+      const methodDesc = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller.prototype, prop) || '';
       const mtag = Reflect.getMetadata(METADATA_API_USETAGS, Controller.prototype, prop);
 
       const method: IPath = {
-        summary: description,
+        summary: methodDesc,
         tags: [mtag || tag],
         produces: ['application/json', 'application/x-www-form-urlencoded'],
         parameters: [],
@@ -155,7 +163,7 @@ function generateApi(controllers: Array<any>, swaggerConfig: ISwaggerOption) {
   return api;
 }
 
-function getRequestMappings(router: any): Array<string> {
+function getRequestMappings(router: any): string[] {
   return Object.getOwnPropertyNames(router).filter(prop => {
     return (
       prop !== 'constructor' &&
