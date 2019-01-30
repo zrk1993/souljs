@@ -77,6 +77,8 @@ export default class User {
 
 #### 接口描述
 
+接口文档默认访问地址: /swagger-ui/index.html
+
 ```typescript
 @Controller('/user')
 @ApiUseTags('user')
@@ -96,7 +98,7 @@ export default class User {
 
 - 参数
   - { string } root - 项目路径
-  - { string | controller[] } controllers - 控制器的目录位置，或者是控制器类的数组
+  - { string | controller[] } controllers - 控制器的目录位置，使用globs匹配，或者是控制器类的数组
   - { ApplicationOptions }  options - 参考如下ApplicationOptions, 值false不启用功能
 
   ```typescript
@@ -154,6 +156,8 @@ export default class User {
 test(@Body() Body: any, @Query() query: any) {}
   
  ```
+ 
+ 提供如下修饰器
 
 - @Ctx() - ctx
 - @Request() - ctx.request
