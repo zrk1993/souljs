@@ -12,7 +12,7 @@ Node.js >= 8.0.0 required.
 
 ## 快速开始
 
-### 创建应用实例
+#### 创建应用实例
 
 ```typescript main.ts
 import { createApplication } from 'souljs';
@@ -26,7 +26,7 @@ async function main() {
 main();
 ```
 
-### 路由处理并返回数据
+#### 路由处理并返回数据
 
 ```typescript controller/user.ts
 @Controller('/user')
@@ -39,7 +39,7 @@ export default class User {
 }
 ```
 
-2. 通过@Render返回视图
+#### 通过@Render返回视图
 
 ```typescript controller/user.ts
 @Controller('/user')
@@ -52,23 +52,21 @@ export default class User {
     return { content: 'hi' };
   }
 }
-```
+``
 
+#### 接口描述
 
-### 路由请求参数验证
-
-```typescript controller/user.ts
+```typescript
 @Controller('/user')
+@ApiUseTags('user')
+@ApiDescription('用户信息')
 export default class User {
 
-  @Post('/add_user')
-  @BodySchame(joi.object().keys({
-    name: joi.string().required()
-  }))
-  changeName(@Body() body: any) {
-    return body.name;
-  }
+  @Post('/hi')
+  @ApiDescription('test')
+  test() {}
 }
+
 ```
 
 ## API
