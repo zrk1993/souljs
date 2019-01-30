@@ -143,7 +143,7 @@ export default class User {
 不能禁用hbs
 
 
-### 使用Joi验证请求参数
+### 使用[Joi](https://www.npmjs.com/package/joi)验证请求参数
 
 - BodySchame(schame: joi.AnySchema)
 
