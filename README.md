@@ -12,7 +12,7 @@ Node.js >= 8.0.0 required.
 
 ## 快速开始
 
-创建应用实例
+### 创建应用实例
 
 ```typescript main.ts
 import { createApplication } from 'souljs';
@@ -26,7 +26,7 @@ async function main() {
 main();
 ```
 
-1. 路由处理并返回数据
+### 路由处理并返回数据
 
 ```typescript controller/user.ts
 @Controller('/user')
@@ -55,7 +55,7 @@ export default class User {
 ```
 
 
-3. 路由请求参数验证
+### 路由请求参数验证
 
 ```typescript controller/user.ts
 @Controller('/user')
