@@ -54,6 +54,27 @@ export default class User {
 }
 ```
 
+
+#### 请求参数验证
+
+```typescript
+@Controller('/user')
+export default class User {
+
+  @Post('/chname')
+  @QuerySchame(joi.object().keys({
+    id: joi.string()
+  }))
+  @BodySchame(joi.object().keys({
+    name: joi.string().required()
+  }))
+  changeName(@Body() body: any, @Query() query: any) {
+    return ResultUtils.ok(body);
+  }
+}
+
+```
+
 #### 接口描述
 
 ```typescript
@@ -71,13 +92,20 @@ export default class User {
 
 ## API
 
-### createApplication
-
-创建应用实例
+### createApplication(root, controllers, options)
 
 - 参数
-
-  - ```typescript
-    root: string = __dirname
-    ``` 
+  - { string } root - 项目路径
+  - { string | controller[] } controllers - 控制器的目录位置，或者是控制器类的数组
+  - { ApplicationOptions }  options
+  ```typescript
+    export interface ApplicationOptions {
+      staticAssets?: { root: string; prefix?: string } | boolean;
+      swagger?: { url: string; prefix?: string } | boolean;
+      bodyparser?: Bodyparser.Options | boolean;
+      session?: KoaSession.opts | boolean;
+      hbs?: { viewPath?: string } | boolean;
+      helmet?: object | boolean;
+    }
+  ```
 
