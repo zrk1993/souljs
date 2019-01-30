@@ -15,8 +15,8 @@ export const Get = createRequestMapping('GET');
 
 export const Post = createRequestMapping('POST');
 
-export const Controller = (path: string) => {
+export const Controller = (path?: string) => {
   return (target: any) => {
-    Reflect.defineMetadata(METADATA_ROUTER_PATH, path, target);
+    Reflect.defineMetadata(METADATA_ROUTER_PATH, path || '', target);
   };
 };

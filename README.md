@@ -1,4 +1,4 @@
-# souljs
+# [souljs](https://github.com/my-soul/souljs)
 
 A nodejs web framework, 对koa简单包装，装饰风格，内置开发常用中间件，使用typescript编写
 
