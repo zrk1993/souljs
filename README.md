@@ -1,7 +1,7 @@
 # souljs
 A nodejs framework for building concise and decorative applications written by typescript
 
-## 开始
+## 安装
 
 ``` bash
 git clone https://github.com/my-soul/souljs-starter.git
@@ -10,14 +10,9 @@ npm install && npm run start
 ```
 Node.js >= 8.0.0 required.
 
-## 功能
+## 快速开始
 
-- ✔︎ 使用修饰器标注路由，以及接口说明
-- ✔︎ 使用joi验证请求参数，并自动生成swagger接口文档
-- ✔︎ 内置常用中间件开箱即用
-- ✔︎ 路由处理函数参数注入
-
-## 示例
+创建应用实例
 
 ```typescript main.ts
 import { createApplication } from 'souljs';
@@ -30,6 +25,8 @@ async function main() {
 
 main();
 ```
+
+路由处理
 
 ```typescript controller/user.ts
 @Controller('/user')
