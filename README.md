@@ -92,20 +92,36 @@ export default class User {
 
 ## API
 
-### createApplication(root, controllers, options)
+### createApplication(root, controllers, options): Application
 
 - 参数
   - { string } root - 项目路径
   - { string | controller[] } controllers - 控制器的目录位置，或者是控制器类的数组
-  - { ApplicationOptions }  options
+  - { ApplicationOptions }  options - 参考如下ApplicationOptions
+
   ```typescript
-    export interface ApplicationOptions {
-      staticAssets?: { root: string; prefix?: string } | boolean;
-      swagger?: { url: string; prefix?: string } | boolean;
+    nterface ApplicationOptions {
+      staticAssets?: { root: string; prefix?: string } | boolean; // 静态资源
+      swagger?: { url: string; prefix?: string } | boolean; // swagger-ui
       bodyparser?: Bodyparser.Options | boolean;
       session?: KoaSession.opts | boolean;
       hbs?: { viewPath?: string } | boolean;
-      helmet?: object | boolean;
+      helmet?: object | boolean; // 安全相关
     }
   ```
+- 返回值：Application
+
+### Application
+
+实例方法
+
+- use(mid: Koa.Middleware)
+
+- listen(port: number)
+
+- getKoaInstance(): Koa
+
+- getHttpServer(): http.Server
+
+
 
