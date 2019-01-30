@@ -149,6 +149,12 @@ export default class User {
 
 ### 控制器处理方法参数注入
 
+```typescript
+@Post('/test')
+test(@Body() Body: any, @Query() query: any) {}
+  
+ ```
+
 - @Ctx() - ctx
 - @Request() - ctx.request
 - @Response() - ctx.Response
