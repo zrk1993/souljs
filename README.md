@@ -97,19 +97,20 @@ export default class User {
 - 参数
   - { string } root - 项目路径
   - { string | controller[] } controllers - 控制器的目录位置，或者是控制器类的数组
-  - { ApplicationOptions }  options - 参考如下ApplicationOptions
+  - { ApplicationOptions }  options - 参考如下ApplicationOptions, 值false不启用功能
 
   ```typescript
     nterface ApplicationOptions {
-      staticAssets?: { root: string; prefix?: string } | boolean; // 静态资源
+      staticAssets?: { root: string; prefix?: string } | boolean; // koa-static'
       swagger?: { url: string; prefix?: string } | boolean; // swagger-ui
-      bodyparser?: Bodyparser.Options | boolean;
-      session?: KoaSession.opts | boolean;
-      hbs?: { viewPath?: string } | boolean;
-      helmet?: object | boolean; // 安全相关
+      bodyparser?: Bodyparser.Options | boolean; // koa-bodyparser
+      session?: KoaSession.opts | boolean; // koa-session
+      hbs?: { viewPath?: string } | boolean; // koa-hbs
+      helmet?: object | boolean; // koa-helmet
     }
   ```
 - 返回值：Application
+
 
 ### Application
 
@@ -124,4 +125,39 @@ export default class User {
 - getHttpServer(): http.Server
 
 
+### http请求装饰器
+
+内部使用koa-router中间件，提供对应的方法的装饰器
+
+- @Controller(string|void)
+
+- @POST(string|void)
+
+- @Get(string|void)
+
+### @Render(view: string) 模板渲染
+
+不能禁用hbs
+
+
+### 使用Joi验证请求参数
+
+- BodySchame(schame: joi.AnySchema)
+
+- QuerySchame(schame: joi.AnySchema)
+
+
+### 控制器处理方法参数注入
+
+- @Ctx() - ctx
+- @Request() - ctx.request
+- @Response() - ctx.Response
+- @Query(string|void) - ctx.request.query[string] | ctx.request.query
+- @Body(string|void) - ctx.request.body[string] | ctx.request.body
+
+- @Session() - ctx.Session
+- @Headers() - ctx.request.headers
+- @Cookies() - ctx.cookies
+- @ApplicationInstance() - 当前应用实例
+- @KoaInstance() - 当前koa实例
 
