@@ -1,5 +1,6 @@
 # souljs
-A nodejs framework for building concise and decorative applications written by typescript
+
+A nodejs web framework, 对koa简单包装，内置开发常用中间件，装饰风格的使用typescript编写
 
 ## 安装
 
