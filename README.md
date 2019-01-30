@@ -102,7 +102,7 @@ export default class User {
   - { ApplicationOptions }  options - 参考如下ApplicationOptions, 值false不启用功能
 
   ```typescript
-    nterface ApplicationOptions {
+    interface ApplicationOptions {
       staticAssets?: { root: string; prefix?: string } | boolean; // koa-static'
       swagger?: { url: string; prefix?: string } | boolean; // swagger-ui
       bodyparser?: Bodyparser.Options | boolean; // koa-bodyparser
@@ -165,9 +165,6 @@ test(@Body() Body: any, @Query() query: any) {}
 - @Query(string|void) - ctx.request.query[string] | ctx.request.query
 - @Body(string|void) - ctx.request.body[string] | ctx.request.body
 
-- @Session() - ctx.Session
-- @Headers() - ctx.request.headers
-- @Cookies() - ctx.cookies
 - @ApplicationInstance() - 当前应用实例
 - @KoaInstance() - 当前koa实例
 
