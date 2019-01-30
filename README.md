@@ -1,6 +1,6 @@
 # souljs
 
-A nodejs web framework, 对koa简单包装，内置开发常用中间件，装饰风格的使用typescript编写
+A nodejs web framework, 对koa简单包装，装饰风格，内置开发常用中间件，使用typescript编写
 
 ## 安装
 
