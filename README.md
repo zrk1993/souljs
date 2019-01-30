@@ -52,7 +52,7 @@ export default class User {
     return { content: 'hi' };
   }
 }
-``
+```
 
 #### 接口描述
 
