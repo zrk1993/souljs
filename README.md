@@ -26,7 +26,20 @@ async function main() {
 main();
 ```
 
-1. 路由处理@Render返回视图
+1. 路由处理并返回数据
+
+```typescript controller/user.ts
+@Controller('/user')
+export default class User {
+
+  @Post('/chname')
+  changeName() {
+    return ‘hello world’;
+  }
+}
+```
+
+2. 通过@Render返回视图
 
 ```typescript controller/user.ts
 @Controller('/user')
@@ -37,20 +50,6 @@ export default class User {
   @Render('user')
   index() {
     return { content: 'hi' };
-  }
-}
-```
-
-
-2. 路由处理返回数据
-
-```typescript controller/user.ts
-@Controller('/user')
-export default class User {
-
-  @Post('/chname')
-  changeName() {
-    return ‘hello world’;
   }
 }
 ```
@@ -80,5 +79,7 @@ export default class User {
 
 - 参数
 
-  - ```typescript root: string = __dirname ``` 
+  - ```typescript
+    root: string = __dirname
+    ``` 
 
