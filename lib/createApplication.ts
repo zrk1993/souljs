@@ -7,14 +7,14 @@ import * as mount from 'koa-mount';
 import koaConditionalGet = require('koa-conditional-get');
 import koaEtag = require('koa-etag');
 import cors = require('@koa/cors');
-import * as Debug from 'debug';
 import { globs, loadPackage } from './utils/load-modules';
+import { logger as voidLogger } from './utils/logger';
 import { Application } from './application';
 import { useSwaggerApi } from './middlewares/swagger-doc';
-
-const debug = Debug('app:createApplication');
+import { ILogger } from './interfaces';
 
 export interface ApplicationOptions {
+  logger?: ILogger;
   staticAssets?: { root: string; prefix?: string } | boolean;
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
@@ -28,24 +28,26 @@ export async function createApplication(
   globsOrControllers: string | any[],
   options: ApplicationOptions = {},
 ): Promise<Application> {
-  debug('application starting ...');
+  const logger = options.logger || voidLogger;
+
+  logger.info('application starting ...');
 
   const routers =
     typeof globsOrControllers === 'string'
       ? (await globs(root, globsOrControllers)).map(loadPackage).map(m => m.default)
       : globsOrControllers;
 
-  debug('find %d routes', routers.length);
+  logger.info('find %d routes', routers.length);
 
-  const app = new Application(routers);
+  const app = new Application(routers, { logger });
 
   if (options.helmet !== false) {
-    debug('应用全局中间件 %s', 'koa-helmet');
+    logger.info('应用全局中间件 %s', 'koa-helmet');
     app.use(helmet());
   }
 
   if (options.cors !== false) {
-    debug('应用全局中间件 %s', 'koa-cors');
+    logger.info('应用全局中间件 %s', 'koa-cors');
     app.use(cors(options.cors));
   }
 
@@ -58,11 +60,11 @@ export async function createApplication(
       },
       options.staticAssets,
     );
-    debug('应用全局中间件 %s', 'koa-etag');
+    logger.info('应用全局中间件 %s', 'koa-etag');
     app.use(mount(staticAssetsOptions.prefix, koaConditionalGet()));
     app.use(mount(staticAssetsOptions.prefix, koaEtag()));
 
-    debug(
+    logger.info(
       '应用全局中间件 %s 资源目录 %s, prefix: %s',
       'koa-static',
       staticAssetsOptions.root,
@@ -80,7 +82,7 @@ export async function createApplication(
       },
       options.bodyparser,
     );
-    debug('应用全局中间件 %s', 'koa-bodyparser');
+    logger.info('应用全局中间件 %s', 'koa-bodyparser');
     app.use(Bodyparser(bodyparserOptions));
   }
 
@@ -91,7 +93,7 @@ export async function createApplication(
       },
       options.hbs,
     );
-    debug('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
+    logger.info('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
     app.use(hbs.middleware(hbsOptions));
   }
 
@@ -103,7 +105,7 @@ export async function createApplication(
       },
       options.swagger,
     );
-    debug('应用swagger接口文档 访问路劲：%s%s', swaggerOptions.prefix, '/index.html');
+    logger.info('应用swagger接口文档 访问路劲：%s%s', swaggerOptions.prefix, '/index.html');
     useSwaggerApi(app, swaggerOptions);
   }
 

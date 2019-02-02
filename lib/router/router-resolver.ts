@@ -1,11 +1,11 @@
 import 'reflect-metadata';
 import * as KoaRouter from 'koa-router';
 import * as Koa from 'koa';
-import * as Debug from 'debug';
 import { ExecutionContex } from './execution-contex';
 import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
 import { ParamValidate } from '../middlewares/param-validate';
+import { ILogger } from '../interfaces';
 import {
   METADATA_ROUTER_METHOD,
   METADATA_ROUTER_PATH,
@@ -14,18 +14,18 @@ import {
   METADATA_ROUTER_QUERY_SCHAME,
 } from '../constants';
 
-const debug = Debug('app:RouterResolver');
-
 export class RouterResolver {
   private readonly routers: any[];
   private readonly appInstance: Application;
   private readonly koaRouter: KoaRouter;
   private readonly responseHandler: ResponseHandler;
+  private readonly logger: ILogger;
 
   constructor(routers: any[], appInstance: Application, options?: object) {
     this.routers = routers;
     this.appInstance = appInstance;
     this.koaRouter = new KoaRouter();
+    this.logger = appInstance.getLogger();
     this.responseHandler = new ResponseHandler(this.appInstance);
   }
 
@@ -41,7 +41,7 @@ export class RouterResolver {
   }
 
   private registerRouter(Router: any) {
-    debug('路由 %s', Router.name);
+    this.logger.info('路由 %s', Router.name);
 
     const executionContex = new ExecutionContex(this.appInstance, this.responseHandler, Router);
 
@@ -60,7 +60,7 @@ export class RouterResolver {
 
       const allMiddlewares = [].concat(routerMiddlewares).concat(propMiddlewares);
 
-      debug('应用中间件 %s', allMiddlewares.map(i => i.name).join(' -> '));
+      this.logger.info('应用中间件 %s', allMiddlewares.map(i => i.name).join(' -> '));
 
       const validQuerySchame = Reflect.getMetadata(METADATA_ROUTER_QUERY_SCHAME, Router.prototype, prop);
       if (validQuerySchame) {
@@ -72,7 +72,7 @@ export class RouterResolver {
         allMiddlewares.push(ParamValidate(validBodySchame, { type: 'body' }));
       }
 
-      debug('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
+      this.logger.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
 
       this.koaRouterRegisterHelper(requestMethod)(requestPath, ...allMiddlewares, executionContex.create(prop));
     });
