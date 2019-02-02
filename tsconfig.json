@@ -1,14 +1,20 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "declaration": true,
+    "declaration": false,
+    "noImplicitAny": false,
+    "noUnusedLocals": false,
     "removeComments": true,
+    "noLib": false,
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "target": "es6",
     "sourceMap": true,
-    "outDir": "./dist",
-    "baseUrl": "./"
+    "allowJs": true,
+    "outDir": "dist",
+    "lib": [
+      "es7"
+    ]
   },
   "include": [
     "lib/**/*",

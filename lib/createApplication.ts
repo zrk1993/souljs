@@ -15,10 +15,10 @@ import { ILogger } from './interfaces';
 
 export interface ApplicationOptions {
   logger?: ILogger;
-  staticAssets?: { root: string; prefix?: string } | boolean;
+  staticAssets?: { root: string; prefix?: string } | object | boolean;
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
-  hbs?: { viewPath?: string } | boolean;
+  hbs?: { viewPath?: string } | object | boolean;
   helmet?: object | boolean;
   cors?: object | boolean;
 }
