@@ -12,7 +12,6 @@ import {
   METADATA_ROUTER_BODY_SCHAME,
   METADATA_ROUTER_METHOD,
   METADATA_ROUTER_PATH,
-  METADATA_API_USETAGS,
   METADATA_API_DESCRIPTION,
 } from '../constants';
 
@@ -101,8 +100,8 @@ function generateApi(controllers: any[], swaggerConfig: ISwaggerOption) {
 
   controllers.forEach(Controller => {
     const requestMappings = getRequestMappings(Controller.prototype);
-    const tag = Reflect.getMetadata(METADATA_API_USETAGS, Controller);
 
+    const tag = Controller.name;
     const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller) || '';
 
     if (!api.tags.find(i => i.name === tag)) {
@@ -118,11 +117,10 @@ function generateApi(controllers: any[], swaggerConfig: ISwaggerOption) {
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Controller.prototype, prop);
 
       const methodDesc = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller.prototype, prop) || '';
-      const mtag = Reflect.getMetadata(METADATA_API_USETAGS, Controller.prototype, prop);
 
       const method: IPath = {
         summary: methodDesc,
-        tags: [mtag || tag],
+        tags: [tag],
         produces: ['application/json', 'application/x-www-form-urlencoded'],
         parameters: [],
         responses: { default: { description: 'successful operation' } },

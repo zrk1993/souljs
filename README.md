@@ -82,7 +82,6 @@ export default class User {
 
 ```typescript
 @Controller('/user')
-@ApiUseTags('user')
 @ApiDescription('用户信息')
 export default class User {
 
@@ -104,12 +103,12 @@ export default class User {
 
   ```typescript
     interface ApplicationOptions {
-      staticAssets?: { root: string; prefix?: string } | boolean; // koa-static'
+      staticAssets?: { root: string; prefix?: string } | boolean; // https://github.com/koajs/static
       swagger?: { url: string; prefix?: string } | boolean; // swagger-ui
-      bodyparser?: Bodyparser.Options | boolean; // koa-bodyparser
-      session?: KoaSession.opts | boolean; // koa-session
-      hbs?: { viewPath?: string } | boolean; // koa-hbs
-      helmet?: object | boolean; // koa-helmet
+      bodyparser?: Bodyparser.Options | boolean; // https://github.com/koajs/bodyparser
+      cors?: object | boolean; // https://github.com/koajs/cors
+      hbs?: { viewPath?: string } | boolean; // https://github.com/koajs/koa-hbs
+      helmet?: object | boolean; // https://github.com/venables/koa-helmet
     }
   ```
 - 返回值：Application

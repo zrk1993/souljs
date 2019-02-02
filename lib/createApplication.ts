@@ -1,26 +1,26 @@
 import * as Path from 'path';
 import * as Bodyparser from 'koa-bodyparser';
-import * as KoaSession from 'koa-session';
 import * as hbs from 'koa-hbs';
 import * as koaStatic from 'koa-static';
 import * as helmet from 'koa-helmet';
 import * as mount from 'koa-mount';
 import koaConditionalGet = require('koa-conditional-get');
 import koaEtag = require('koa-etag');
+import cors = require('@koa/cors');
 import * as Debug from 'debug';
 import { globs, loadPackage } from './utils/load-modules';
 import { Application } from './application';
 import { useSwaggerApi } from './middlewares/swagger-doc';
 
-const debug = Debug('soul:createApplication');
+const debug = Debug('app:createApplication');
 
 export interface ApplicationOptions {
   staticAssets?: { root: string; prefix?: string } | boolean;
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
-  session?: KoaSession.opts | boolean;
   hbs?: { viewPath?: string } | boolean;
   helmet?: object | boolean;
+  cors?: object | boolean;
 }
 
 export async function createApplication(
@@ -44,10 +44,15 @@ export async function createApplication(
     app.use(helmet());
   }
 
+  if (options.cors !== false) {
+    debug('应用全局中间件 %s', 'koa-cors');
+    app.use(cors(options.cors));
+  }
+
   if (options.staticAssets !== false) {
     const staticAssetsOptions = Object.assign(
       {
-        root: 'public',
+        root: Path.join(root, '..', 'public'),
         prefix: '/static',
         maxage: 86400000,
       },
@@ -63,9 +68,7 @@ export async function createApplication(
       staticAssetsOptions.root,
       staticAssetsOptions.prefix,
     );
-    app.use(
-      mount(staticAssetsOptions.prefix, koaStatic(Path.join(root, staticAssetsOptions.root), staticAssetsOptions)),
-    );
+    app.use(mount(staticAssetsOptions.prefix, koaStatic(staticAssetsOptions.root, staticAssetsOptions)));
   }
 
   if (options.bodyparser !== false) {
@@ -81,29 +84,14 @@ export async function createApplication(
     app.use(Bodyparser(bodyparserOptions));
   }
 
-  if (options.session !== false) {
-    const sessionOptions = Object.assign(
-      {
-        key: 'soul:sess',
-        maxAge: 86400000,
-        httpOnly: true,
-        renew: false,
-      },
-      options.session,
-    );
-    debug('应用全局中间件 %s', 'koa-session');
-    app.use(KoaSession(sessionOptions, app.getKoaInstance()));
-  }
-
   if (options.hbs !== false) {
     const hbsOptions = Object.assign(
       {
-        viewPath: './views',
+        viewPath: Path.join(root, '..', 'views'),
       },
       options.hbs,
     );
     debug('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
-    hbsOptions.viewPath = Path.join(root, hbsOptions.viewPath);
     app.use(hbs.middleware(hbsOptions));
   }
 

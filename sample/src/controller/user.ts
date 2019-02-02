@@ -1,14 +1,4 @@
-import {
-  Controller,
-  Get,
-  Use,
-  Render,
-  Body,
-  BodySchame,
-  QuerySchame,
-  ApiUseTags,
-  ApiDescription,
-} from '../../../index';
+import { Controller, Get, Use, Render, Body, BodySchame, QuerySchame, ApiDescription } from '../../../index';
 
 import * as joi from 'joi';
 import * as Koa from 'koa';
@@ -17,8 +7,7 @@ import { Test } from '../middleware/Test';
 import { ResultUtils } from '../utils';
 import { Post, Ctx, Query } from '../../../lib/decorators';
 
-@Controller('/user')
-@ApiUseTags('user')
+@Controller()
 @ApiDescription('用户信息')
 @Use(Auth())
 @Use(Test())

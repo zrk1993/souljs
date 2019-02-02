@@ -1,17 +1,19 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "noImplicitAny": true,
+    "declaration": true,
     "removeComments": true,
-    "preserveConstEnums": true,
-    "sourceMap": true,
-    "target": "es2017",
-    "outDir": "dist",
+    "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
-    "emitDecoratorMetadata": true
+    "target": "es6",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./"
   },
   "include": [
     "lib/**/*",
     "sample/**/*"
   ],
+  "exclude": ["node_modules"]
 }
+

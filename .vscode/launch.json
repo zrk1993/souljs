@@ -8,7 +8,7 @@
       "name": "Current TS File",
       "type": "node",
       "request": "launch",
-      "env": { "DEBUG": "soul*" },
+      "env": { "DEBUG": "app*" },
       "args": [
         "${workspaceRoot}/sample/src/main.ts" // 入口文件
       ],

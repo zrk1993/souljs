@@ -3,7 +3,7 @@ import * as Koa from 'koa';
 import * as Debug from 'debug';
 import { RouterResolver } from './router/router-resolver';
 
-const debug = Debug('soul:Application');
+const debug = Debug('app:Application');
 
 export class Application {
   private readonly httpServer: http.Server;

@@ -14,7 +14,7 @@ async function main() {
     }
   });
 
-  app.listen(3001);
+  app.listen(3000);
 }
 
 process.on('uncaughtException', () => {

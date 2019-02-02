@@ -14,7 +14,7 @@ import {
   METADATA_ROUTER_QUERY_SCHAME,
 } from '../constants';
 
-const debug = Debug('soul:RouterResolver');
+const debug = Debug('app:RouterResolver');
 
 export class RouterResolver {
   private readonly routers: any[];
