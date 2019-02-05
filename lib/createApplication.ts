@@ -34,7 +34,7 @@ export async function createApplication(
 
   const routers =
     typeof globsOrControllers === 'string'
-      ? (await globs(root, globsOrControllers)).map(loadPackage).map(m => m.default)
+      ? (await globs(root, globsOrControllers.replace('.ts', '.?s'))).map(loadPackage).map(m => m.default)
       : globsOrControllers;
 
   logger.info('find %d routes', routers.length);
