@@ -14,7 +14,7 @@ const joiOptions = {
   stripUnknown: true, // 移除未声明的字段
 };
 export function ParamValidate(schema: joi.AnySchema, option: { type: string }): Koa.Middleware {
-  return async (ctx, next) => {
+  return async (ctx: Koa.Context | any, next) => {
     const data = option.type === 'query' ? ctx.request.query : ctx.request.body;
     const result = joi.validate(data, schema, joiOptions);
     if (result.error === null) {

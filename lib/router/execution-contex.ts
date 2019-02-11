@@ -58,7 +58,7 @@ export class ExecutionContex {
 
   private convertParamDecorator(
     param: { index: number; type: ParamDecoratorType; data: any },
-    ctx: Koa.Context,
+    ctx: Koa.Context | any,
     next: () => void,
   ): any {
     switch (param.type) {
