@@ -48,7 +48,8 @@ export async function createApplication(
 
   if (options.cors !== false) {
     logger.info('应用全局中间件 %s', 'koa-cors');
-    app.use(cors(options.cors));
+    const corsOptions = { credentials: true };
+    app.use(cors(Object.assign(corsOptions, options.cors)));
   }
 
   if (options.staticAssets !== false) {
