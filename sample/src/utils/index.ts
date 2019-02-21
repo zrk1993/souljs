@@ -1,1 +1,1 @@
-export * from './result-utils';
+export * from '../../../lib/utils/result-utils';

@@ -1,12 +1,15 @@
 import 'reflect-metadata';
 import * as KoaRouter from 'koa-router';
 import * as Koa from 'koa';
+import { CronJob } from 'cron';
 import { ExecutionContex } from './execution-contex';
 import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
 import { ParamValidate } from '../middlewares/param-validate';
 import { ILogger } from '../interfaces';
+import isMaster from '../utils/is-master'
 import {
+  METADATA_CRON,
   METADATA_ROUTER_METHOD,
   METADATA_ROUTER_PATH,
   METADATA_ROUTER_MIDDLEWARE,
@@ -32,6 +35,7 @@ export class RouterResolver {
   resolve() {
     this.routers.forEach((router: any) => {
       this.registerRouter(router);
+      this.registerCronJob(router);
     });
 
     this.appInstance
@@ -53,7 +57,7 @@ export class RouterResolver {
       const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router.prototype, prop),
-      ].join('');
+      ].join('').replace('//', '/');
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Router.prototype, prop);
 
       const propMiddlewares = this.getMiddlewares(Router.prototype, prop);
@@ -72,9 +76,29 @@ export class RouterResolver {
         allMiddlewares.push(ParamValidate(validBodySchame, { type: 'body' }));
       }
 
-      this.logger.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
+      this.logger.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath)
 
       this.koaRouterRegisterHelper(requestMethod)(requestPath, ...allMiddlewares, executionContex.create(prop));
+    });
+  }
+
+  private registerCronJob(Router: any) {
+    const cronJobs = Object.getOwnPropertyNames(Router.prototype).filter(prop => {
+      return (
+        prop !== 'constructor' &&
+        typeof Router.prototype[prop] === 'function' &&
+        Reflect.hasMetadata(METADATA_CRON, Router.prototype, prop)
+      );
+    });
+
+    cronJobs.forEach((prop) => {
+      const { cronTime, options } = Reflect.getMetadata(METADATA_CRON, Router.prototype, prop);
+
+      if (options.onlyRunMaster && !isMaster()) return;
+  
+      this.logger.info('创建计划任务 %s.%s cron：%s', Router.name, prop, cronTime);
+      const job = new CronJob(cronTime, Router.prototype[prop].bind(Router.prototype));
+      job.start();
     });
   }
 

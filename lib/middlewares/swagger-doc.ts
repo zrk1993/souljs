@@ -6,8 +6,9 @@ import * as mount from 'koa-mount';
 import * as koaStatic from 'koa-static';
 import * as SwaggerUIDist from 'swagger-ui-dist';
 import { Application } from '../application';
-import { globs, loadPackage } from '../utils/load-modules';
+import { loadPackage } from '../utils/load-modules';
 import {
+  METADATA_CRON,
   METADATA_ROUTER_QUERY_SCHAME,
   METADATA_ROUTER_BODY_SCHAME,
   METADATA_ROUTER_METHOD,
@@ -112,14 +113,20 @@ function generateApi(controllers: any[], swaggerConfig: ISwaggerOption) {
       const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller.prototype, prop),
-      ].join('');
+      ].join('').replace('//', '/');
 
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Controller.prototype, prop);
 
       const methodDesc = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller.prototype, prop) || '';
 
+      let cronJobInfo = '';
+      if (Reflect.hasMetadata(METADATA_CRON, Controller.prototype, prop)) {
+        const { cronTime, options } = Reflect.getMetadata(METADATA_CRON, Controller.prototype, prop);
+        cronJobInfo = `【计划任务：${cronTime}】${options.onlyRunMaster ? '（onlyRunMaster）' : ''}`;
+      }
+
       const method: IPath = {
-        summary: methodDesc,
+        summary: methodDesc + cronJobInfo,
         tags: [tag],
         produces: ['application/json', 'application/x-www-form-urlencoded'],
         parameters: [],

@@ -1,7 +1,7 @@
 import { createApplication } from '../../index';
 
 async function main() {
-  const app = await createApplication(__dirname, 'controller/*.ts');
+  const app = await createApplication(__dirname, 'controller/*.ts', { logger: console });
 
   app.getKoaInstance().on('error', (err, ctx) => {
     ctx.body = err;

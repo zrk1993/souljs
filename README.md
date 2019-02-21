@@ -92,6 +92,23 @@ export default class User {
 
 ```
 
+#### 计划任务 @CronJob
+
+使用修饰器@CronJob执行计划任务
+
+```typescript
+@Controller()
+@ApiDescription('用户信息')
+export default class User {
+
+  @CronJob('* * * * * *', { onlyRunMaster: false }) // 多进程下是否只在master进程执行 default: true
+  cron() {
+    console.log('计划任务执行了！');
+  }
+}
+
+```
+
 ## API
 
 ### createApplication(root, controllers, options): Application
@@ -167,4 +184,3 @@ test(@Body() Body: any, @Query() query: any) {}
 
 - @ApplicationInstance() - 当前应用实例
 - @KoaInstance() - 当前koa实例
-
