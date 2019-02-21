@@ -113,7 +113,9 @@ function generateApi(controllers: any[], swaggerConfig: ISwaggerOption) {
       const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Controller.prototype, prop),
-      ].join('').replace('//', '/');
+      ]
+        .join('')
+        .replace('//', '/');
 
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Controller.prototype, prop);
 

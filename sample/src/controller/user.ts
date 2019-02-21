@@ -1,11 +1,23 @@
-import { Controller, Get, Use, Render, Body, BodySchame, QuerySchame, ApiDescription, ResultUtils } from '../../../index';
+import {
+  Controller,
+  Get,
+  Post,
+  Ctx,
+  Query,
+  CronJob,
+  Use,
+  Render,
+  Body,
+  BodySchame,
+  QuerySchame,
+  ApiDescription,
+  ResultUtils,
+} from '../../../index';
 
 import * as joi from 'joi';
 import * as Koa from 'koa';
 import { Auth } from '../middleware/Auth';
 import { Test } from '../middleware/Test';
-import { Post, Ctx, Query } from '../../../lib/decorators';
-import { CronJob } from '../../../lib/decorators/cron-job';
 
 @Controller()
 @ApiDescription('用户信息')
@@ -45,12 +57,14 @@ export default class User {
   }
 
   @Post('/test')
-  test(@Body() Body: any, @Query() query: any) {}
+  test(@Body() body: any, @Query() query: any) {
+    return;
+  }
 
   @Get('/cronjob')
   @CronJob('* * * * * *')
   cron() {
-    console.log('hahahahahah');
+    // console.log('hahahahahah');
     return ResultUtils.success('好了');
   }
 }

@@ -1,7 +1,7 @@
 import * as cluster from 'cluster';
 
 export function isPM2Master(): boolean {
-  return parseInt(process.env.INSTANCE_ID) === 0;
+  return parseInt(process.env.INSTANCE_ID, 10) === 0;
 }
 
 /**

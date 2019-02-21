@@ -7,7 +7,7 @@ import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
 import { ParamValidate } from '../middlewares/param-validate';
 import { ILogger } from '../interfaces';
-import isMaster from '../utils/is-master'
+import isMaster from '../utils/is-master';
 import {
   METADATA_CRON,
   METADATA_ROUTER_METHOD,
@@ -57,7 +57,9 @@ export class RouterResolver {
       const requestPath: string = [
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router),
         Reflect.getMetadata(METADATA_ROUTER_PATH, Router.prototype, prop),
-      ].join('').replace('//', '/');
+      ]
+        .join('')
+        .replace('//', '/');
       const requestMethod: string = Reflect.getMetadata(METADATA_ROUTER_METHOD, Router.prototype, prop);
 
       const propMiddlewares = this.getMiddlewares(Router.prototype, prop);
@@ -76,7 +78,7 @@ export class RouterResolver {
         allMiddlewares.push(ParamValidate(validBodySchame, { type: 'body' }));
       }
 
-      this.logger.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath)
+      this.logger.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
 
       this.koaRouterRegisterHelper(requestMethod)(requestPath, ...allMiddlewares, executionContex.create(prop));
     });
@@ -91,11 +93,13 @@ export class RouterResolver {
       );
     });
 
-    cronJobs.forEach((prop) => {
+    cronJobs.forEach(prop => {
       const { cronTime, options } = Reflect.getMetadata(METADATA_CRON, Router.prototype, prop);
 
-      if (options.onlyRunMaster && !isMaster()) return;
-  
+      if (options.onlyRunMaster && !isMaster()) {
+        return;
+      }
+
       this.logger.info('创建计划任务 %s.%s cron：%s', Router.name, prop, cronTime);
       const job = new CronJob(cronTime, Router.prototype[prop].bind(Router.prototype));
       job.start();
