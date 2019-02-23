@@ -15,10 +15,10 @@ import { ILogger } from './interfaces';
 
 export interface ApplicationOptions {
   logger?: ILogger;
-  staticAssets?: { root: string; prefix?: string } | object | boolean;
+  staticAssets?: { root: string; prefix?: string } | object;
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
-  hbs?: { viewPath?: string } | object | boolean;
+  hbs?: { viewPath?: string } | object;
   helmet?: object | boolean;
   cors?: object | boolean;
 }
@@ -52,7 +52,7 @@ export async function createApplication(
     app.use(cors(Object.assign(corsOptions, options.cors)));
   }
 
-  if (options.staticAssets !== false) {
+  if (options.staticAssets) {
     const staticAssetsOptions = Object.assign(
       {
         root: Path.join(root, '..', 'public'),
@@ -74,6 +74,17 @@ export async function createApplication(
     app.use(mount(staticAssetsOptions.prefix, koaStatic(staticAssetsOptions.root, staticAssetsOptions)));
   }
 
+  if (options.hbs) {
+    const hbsOptions = Object.assign(
+      {
+        viewPath: Path.join(root, '..', 'views'),
+      },
+      options.hbs,
+    );
+    logger.info('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
+    app.use(hbs.middleware(hbsOptions));
+  }
+
   if (options.bodyparser !== false) {
     const bodyparserOptions = Object.assign(
       {
@@ -85,17 +96,6 @@ export async function createApplication(
     );
     logger.info('应用全局中间件 %s', 'koa-bodyparser');
     app.use(Bodyparser(bodyparserOptions));
-  }
-
-  if (options.hbs !== false) {
-    const hbsOptions = Object.assign(
-      {
-        viewPath: Path.join(root, '..', 'views'),
-      },
-      options.hbs,
-    );
-    logger.info('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
-    app.use(hbs.middleware(hbsOptions));
   }
 
   if (options.swagger !== false) {

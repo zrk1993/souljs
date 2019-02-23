@@ -120,11 +120,11 @@ export default class User {
 
   ```typescript
     interface ApplicationOptions {
-      staticAssets?: { root: string; prefix?: string } | boolean; // https://github.com/koajs/static
+      staticAssets?: { root: string; prefix?: string } | boolean; // default: disable https://github.com/koajs/static
       swagger?: { url: string; prefix?: string } | boolean; // swagger-ui
       bodyparser?: Bodyparser.Options | boolean; // https://github.com/koajs/bodyparser
       cors?: object | boolean; // https://github.com/koajs/cors
-      hbs?: { viewPath?: string } | boolean; // https://github.com/koajs/koa-hbs
+      hbs?: { viewPath?: string } | boolean; // default: disable https://github.com/koajs/koa-hbs
       helmet?: object | boolean; // https://github.com/venables/koa-helmet
     }
   ```
