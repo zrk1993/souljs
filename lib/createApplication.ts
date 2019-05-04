@@ -56,7 +56,7 @@ export async function createApplication(
     const staticAssetsOptions = Object.assign(
       {
         root: Path.join(root, '..', 'public'),
-        prefix: '/static',
+        prefix: '/public',
         maxage: 86400000,
       },
       options.staticAssets,

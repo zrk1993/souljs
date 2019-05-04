@@ -18,6 +18,7 @@ import * as joi from 'joi';
 import * as Koa from 'koa';
 import { Auth } from '../middleware/Auth';
 import { Test } from '../middleware/Test';
+import CurrentUser from '../decorators/current-user';
 
 @Controller()
 @ApiDescription('用户信息')
@@ -47,7 +48,7 @@ export default class User {
       desc: joi.string(),
     }),
   )
-  api4(@Body() body: any) {
+  api4(@Body() body: any, @CurrentUser() currentUser: any) {
     return ResultUtils.success(body());
   }
 

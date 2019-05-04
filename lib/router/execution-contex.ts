@@ -4,7 +4,7 @@ import * as KoaRouter from 'koa-router';
 import { ResponseHandler } from './response-handler';
 import { Application } from '../application';
 import { METADATA_ROUTER_PARAMS, METADATA_ROUTER_RENDER_VIEW } from '../constants';
-import { ParamDecoratorType } from '../enums';
+import { IParamConvertFunc } from '../interfaces';
 
 export class ExecutionContex {
   private readonly appInstance: Application;
@@ -28,7 +28,7 @@ export class ExecutionContex {
     const renderViewPath = Reflect.getMetadata(METADATA_ROUTER_RENDER_VIEW, this.ContextClass.prototype, propertyKey);
 
     return async (ctx: Koa.Context, next: () => void) => {
-      const params: any[] = this.getRouterHandlerParams(ctx, next, propertyKey) || [];
+      const params: any[] = this.getRouterHandlerParams(ctx, propertyKey) || [];
 
       const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
@@ -42,42 +42,22 @@ export class ExecutionContex {
     };
   }
 
-  private getRouterHandlerParams(ctx: Koa.Context, next: () => void, propertyKey: string): any[] {
+  private getRouterHandlerParams(ctx: Koa.Context, propertyKey: string): any[] {
     const results: any[] = [];
     const routerParams: any[] =
       Reflect.getMetadata(METADATA_ROUTER_PARAMS, this.ContextClass.prototype, propertyKey) || [];
 
-    routerParams.forEach((param: { index: number; type: ParamDecoratorType; data: any }) => {
-      results[param.index] = this.convertParamDecorator(param, ctx, next);
+    routerParams.forEach((param: { index: number; convertFunc: IParamConvertFunc; data: any }) => {
+      results[param.index] = this.convertParamDecorator(param, ctx);
     });
 
     return results;
   }
 
   private convertParamDecorator(
-    param: { index: number; type: ParamDecoratorType; data: any },
+    param: { index: number; convertFunc: IParamConvertFunc; data: any },
     ctx: Koa.Context | any,
-    next: () => void,
   ): any {
-    switch (param.type) {
-      case ParamDecoratorType.Request:
-        return ctx.request;
-      case ParamDecoratorType.Response:
-        return ctx.response;
-      case ParamDecoratorType.Ctx:
-        return ctx;
-      case ParamDecoratorType.Next:
-        return next;
-      case ParamDecoratorType.Query:
-        return param.data && ctx.request.query ? ctx.request.query[param.data] : ctx.request.query;
-      case ParamDecoratorType.Body:
-        return param.data && ctx.request.body ? ctx.request.body[param.data] : ctx.request.body;
-      case ParamDecoratorType.ApplicationInstance:
-        return this.appInstance;
-      case ParamDecoratorType.KoaInstance:
-        return this.appInstance.getKoaInstance();
-      default:
-        return undefined;
-    }
+    return param.convertFunc(ctx);
   }
 }

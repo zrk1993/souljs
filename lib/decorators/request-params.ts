@@ -1,35 +1,22 @@
-import 'reflect-metadata';
-import { ParamDecoratorType } from '../enums';
-import { METADATA_ROUTER_PARAMS } from '../constants';
+import { createParamDecorator } from './param-decorator-tool';
 
-function createParamDecorator(paramDecoratorType: ParamDecoratorType) {
-  return (data?: any) => {
-    return (target: object, propertyKey: string | symbol, parameterIndex: number) => {
-      const routerParams: any[] = Reflect.getMetadata(METADATA_ROUTER_PARAMS, target, propertyKey) || [];
+export const Ctx = createParamDecorator(ctx => {
+  return ctx;
+});
 
-      routerParams.push({
-        type: paramDecoratorType,
-        index: parameterIndex,
-        data,
-      });
+export const Request = createParamDecorator(ctx => {
+  return ctx.request;
+});
 
-      Reflect.defineMetadata(METADATA_ROUTER_PARAMS, routerParams, target, propertyKey);
-    };
-  };
-}
+export const Response = createParamDecorator(ctx => {
+  return ctx.response;
+});
 
-export const Request = createParamDecorator(ParamDecoratorType.Request);
+export const Query = createParamDecorator((ctx, data) => {
+  return data && ctx.request.query ? ctx.request.query[data] : ctx.request.query;
+});
 
-export const Response = createParamDecorator(ParamDecoratorType.Response);
-
-export const Ctx = createParamDecorator(ParamDecoratorType.Ctx);
-
-export const Next = createParamDecorator(ParamDecoratorType.Next);
-
-export const Query = createParamDecorator(ParamDecoratorType.Query);
-
-export const Body = createParamDecorator(ParamDecoratorType.Body);
-
-export const ApplicationInstance = createParamDecorator(ParamDecoratorType.ApplicationInstance);
-
-export const KoaInstance = createParamDecorator(ParamDecoratorType.KoaInstance);
+export const Body = createParamDecorator((ctx, data) => {
+  const body = ctx.request.body;
+  return data && body ? body[data] : body;
+});
