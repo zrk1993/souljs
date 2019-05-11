@@ -82,11 +82,11 @@ export default class User {
 
 ```typescript
 @Controller('/user')
-@ApiDescription('用户信息')
+@Description('用户信息')
 export default class User {
 
   @Post('/hi')
-  @ApiDescription('test')
+  @Description('test')
   test() {}
 }
 
@@ -98,7 +98,7 @@ export default class User {
 
 ```typescript
 @Controller()
-@ApiDescription('用户信息')
+@Description('用户信息')
 export default class User {
 
   @CronJob('* * * * * *', { onlyRunMaster: false }) // 多进程下是否只在master进程执行 default: true

@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { METADATA_ROUTER_RENDER_VIEW } from '../constants';
 
 export function Render(view: string) {

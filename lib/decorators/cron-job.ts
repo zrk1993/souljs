@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import { METADATA_CRON } from '../constants';
 
 interface IOptions {

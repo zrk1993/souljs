@@ -6,6 +6,4 @@ export interface ILogger {
   error(message: any, ...args: any[]): void;
 }
 
-export interface IParamConvertFunc {
-  (ctx: Koa.Context, data?: any): any;
-}
+export type IParamConvertFunc = (ctx: Koa.Context, data?: any) => any;

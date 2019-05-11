@@ -51,6 +51,8 @@ export class RouterResolver {
 
     const routerMiddlewares = this.getMiddlewares(Router);
 
+    this.logger.info('应用中间件 %s', routerMiddlewares.map(i => i.name).join(' -> '));
+
     const requestMappings = this.getRequestMappings(Router.prototype);
 
     requestMappings.forEach(prop => {
@@ -66,8 +68,6 @@ export class RouterResolver {
 
       const allMiddlewares = [].concat(routerMiddlewares).concat(propMiddlewares);
 
-      this.logger.info('应用中间件 %s', allMiddlewares.map(i => i.name).join(' -> '));
-
       const validQuerySchame = Reflect.getMetadata(METADATA_ROUTER_QUERY_SCHAME, Router.prototype, prop);
       if (validQuerySchame) {
         allMiddlewares.push(ParamValidate(validQuerySchame, { type: 'query' }));
@@ -77,8 +77,6 @@ export class RouterResolver {
       if (validBodySchame) {
         allMiddlewares.push(ParamValidate(validBodySchame, { type: 'body' }));
       }
-
-      this.logger.info('注册路由 %s.%s %s %s', Router.name, prop, requestMethod, requestPath);
 
       this.koaRouterRegisterHelper(requestMethod)(requestPath, ...allMiddlewares, executionContex.create(prop));
     });

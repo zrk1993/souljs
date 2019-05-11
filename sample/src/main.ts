@@ -25,4 +25,15 @@ process.on('unhandledRejection', () => {
   process.exit(1);
 });
 
+import * as joi from 'joi';
+
+const schemaMap = {
+  id: joi.string().required(),
+  as: joi.string().allow(),
+};
+
+Object.keys(schemaMap).forEach(k => {
+  schemaMap[k] = schemaMap[k].allow.call(schemaMap[k], '');
+});
+
 main();

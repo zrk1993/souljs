@@ -4,8 +4,6 @@ import * as hbs from 'koa-hbs';
 import * as koaStatic from 'koa-static';
 import * as helmet from 'koa-helmet';
 import * as mount from 'koa-mount';
-import koaConditionalGet = require('koa-conditional-get');
-import koaEtag = require('koa-etag');
 import cors = require('@koa/cors');
 import { globs, loadPackage } from './utils/load-modules';
 import { logger as voidLogger } from './utils/logger';
@@ -52,27 +50,24 @@ export async function createApplication(
     app.use(cors(Object.assign(corsOptions, options.cors)));
   }
 
-  if (options.staticAssets) {
-    const staticAssetsOptions = Object.assign(
-      {
-        root: Path.join(root, '..', 'public'),
-        prefix: '/public',
-        maxage: 86400000,
-      },
-      options.staticAssets,
-    );
-    logger.info('应用全局中间件 %s', 'koa-etag');
-    app.use(mount(staticAssetsOptions.prefix, koaConditionalGet()));
-    app.use(mount(staticAssetsOptions.prefix, koaEtag()));
+  const staticAssetsOptions = Object.assign(
+    {
+      root: Path.join(root, '..', 'public'),
+      prefix: '/public',
+      maxage: 86400000,
+    },
+    options.staticAssets,
+  );
 
-    logger.info(
-      '应用全局中间件 %s 资源目录 %s, prefix: %s',
-      'koa-static',
-      staticAssetsOptions.root,
-      staticAssetsOptions.prefix,
-    );
-    app.use(mount(staticAssetsOptions.prefix, koaStatic(staticAssetsOptions.root, staticAssetsOptions)));
-  }
+  logger.info('站点资源目录public');
+  app.use(mount(staticAssetsOptions.prefix, koaStatic(staticAssetsOptions.root, staticAssetsOptions)));
+
+  logger.info('站点目录www');
+  app.use(
+    koaStatic(Path.join(root, '..', 'www'), {
+      maxage: 86400000,
+    }),
+  );
 
   if (options.hbs) {
     const hbsOptions = Object.assign(

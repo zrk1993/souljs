@@ -12,6 +12,7 @@ import { PARAM_VALIDATIONE_RROR } from '../constants';
 const joiOptions = {
   allowUnknown: true, // 允许出现未声明的字段
   stripUnknown: true, // 移除未声明的字段
+  skipFunctions: true, // ignores unknown keys with a function value
 };
 export function ParamValidate(schema: joi.AnySchema, option: { type: string }): Koa.Middleware {
   return async (ctx: Koa.Context | any, next) => {

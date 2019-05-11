@@ -1,3 +1,4 @@
+import 'reflect-metadata';
 import * as Koa from 'koa';
 import { METADATA_ROUTER_MIDDLEWARE } from '../constants';
 

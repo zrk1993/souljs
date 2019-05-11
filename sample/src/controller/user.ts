@@ -10,7 +10,7 @@ import {
   Body,
   BodySchame,
   QuerySchame,
-  ApiDescription,
+  Description,
   ResultUtils,
 } from '../../../index';
 
@@ -21,35 +21,31 @@ import { Test } from '../middleware/Test';
 import CurrentUser from '../decorators/current-user';
 
 @Controller()
-@ApiDescription('用户信息')
+@Description('用户信息')
 @Use(Auth())
 @Use(Test())
 export default class User {
   @Get()
-  @ApiDescription('用户信息1')
+  @Description('用户信息1')
   @Render('user')
   index() {
     return { content: 'asdasdasdasd' };
   }
 
   @Post('/api4')
-  @ApiDescription('用户信息2')
-  @QuerySchame(
-    joi.object().keys({
-      id: joi.string(),
-      name: joi.number(),
-      is: joi.boolean().required(),
-    }),
-  )
-  @BodySchame(
-    joi.object().keys({
-      name: joi.string().required(),
-      code: joi.string().required(),
-      desc: joi.string(),
-    }),
-  )
+  @Description('用户信息2')
+  @QuerySchame({
+    id: joi.string(),
+    name: joi.number(),
+    is: joi.boolean().required(),
+  })
+  @BodySchame({
+    name: joi.string().required(),
+    code: joi.string().required(),
+    desc: joi.string(),
+  })
   api4(@Body() body: any, @CurrentUser() currentUser: any) {
-    return ResultUtils.success(body());
+    return ResultUtils.success(body);
   }
 
   @Get('/hh')
@@ -58,6 +54,11 @@ export default class User {
   }
 
   @Post('/test')
+  @BodySchame({
+    name: joi.string().required(),
+    code: joi.string().required(),
+    desc: joi.string(),
+  })
   test(@Body() body: any, @Query() query: any) {
     return;
   }
