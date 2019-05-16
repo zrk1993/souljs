@@ -14,6 +14,7 @@ import {
   METADATA_ROUTER_METHOD,
   METADATA_ROUTER_PATH,
   METADATA_API_DESCRIPTION,
+  METADATA_API_TAG,
 } from '../constants';
 
 const convert = loadPackage('joi-to-json-schema');
@@ -102,7 +103,7 @@ function generateApi(controllers: any[], swaggerConfig: ISwaggerOption) {
   controllers.forEach(Controller => {
     const requestMappings = getRequestMappings(Controller.prototype);
 
-    const tag = Controller.name;
+    const tag = Reflect.getMetadata(METADATA_API_TAG, Controller) || Controller.name;
     const description = Reflect.getMetadata(METADATA_API_DESCRIPTION, Controller) || '';
 
     if (!api.tags.find(i => i.name === tag)) {
