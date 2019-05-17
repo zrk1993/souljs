@@ -38,7 +38,7 @@ export function useSwaggerApi(app: Application, swaggerConfig: ISwaggerOption) {
         });
       });
       ctx.type = 'text/html';
-      ctx.body = d.replace(/url:\s*?"\S*"/gi, `url:"${swaggerConfig.url}"`);
+      ctx.body = d.replace(/url:\s*?"\S*"/gi, `url:"${swaggerConfig.url}",docExpansion: 'none'`);
     }),
   );
   app.getKoaInstance().use(
