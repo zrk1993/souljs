@@ -1,6 +1,6 @@
 {
   "name": "souljs",
-  "version": "3.0.1",
+  "version": "3.0.2",
   "description": "A nodejs framework for building concise and decorative applications written by typescript",
   "main": "dist/index.js",
   "types": "index.ts",

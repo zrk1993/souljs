@@ -51,8 +51,6 @@ export class RouterResolver {
 
     const routerMiddlewares = this.getMiddlewares(Router);
 
-    this.logger.info('应用中间件 %s', routerMiddlewares.map(i => i.name).join(' -> '));
-
     const requestMappings = this.getRequestMappings(Router.prototype);
 
     requestMappings.forEach(prop => {
