@@ -24,10 +24,10 @@ export class ExecutionContex {
     this.contextInstance = new ContextClass(...ContextClassArgs);
   }
 
-  create(propertyKey: string): KoaRouter.IMiddleware {
+  create(propertyKey: string): any {
     const renderViewPath = Reflect.getMetadata(METADATA_ROUTER_RENDER_VIEW, this.ContextClass.prototype, propertyKey);
 
-    return async (ctx: Koa.Context, next: () => void) => {
+    return async (ctx: any, next: () => void) => {
       const params: any[] = this.getRouterHandlerParams(ctx, propertyKey) || [];
 
       const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);

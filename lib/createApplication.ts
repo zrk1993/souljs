@@ -1,11 +1,9 @@
 import * as Path from 'path';
 import * as Bodyparser from 'koa-bodyparser';
-import * as hbs from 'koa-hbs';
 import * as koaStatic from 'koa-static';
 import * as helmet from 'koa-helmet';
 import * as mount from 'koa-mount';
 import cors = require('@koa/cors');
-import { globs, loadPackage } from './utils/load-modules';
 import { logger as voidLogger } from './utils/logger';
 import { Application } from './application';
 import { useSwaggerApi } from './middlewares/swagger-doc';
@@ -23,17 +21,14 @@ export interface ApplicationOptions {
 
 export async function createApplication(
   root: string,
-  globsOrControllers: string | any[],
+  globsOrControllers: any[],
   options: ApplicationOptions = {},
 ): Promise<Application> {
   const logger = options.logger || voidLogger;
 
   logger.info('application starting ...');
 
-  const routers =
-    typeof globsOrControllers === 'string'
-      ? (await globs(root, globsOrControllers.replace('.ts', '.?s'))).map(loadPackage).map(m => m.default)
-      : globsOrControllers;
+  const routers = globsOrControllers;
 
   logger.info('find %d routes', routers.length);
 
@@ -52,7 +47,7 @@ export async function createApplication(
 
   const staticAssetsOptions = Object.assign(
     {
-      root: Path.join(root, '..', 'public'),
+      root: Path.join(root, '..', '..', 'nebula-public'),
       prefix: '/public',
       maxage: 86400000,
     },
@@ -68,17 +63,6 @@ export async function createApplication(
       maxage: 86400000,
     }),
   );
-
-  if (options.hbs) {
-    const hbsOptions = Object.assign(
-      {
-        viewPath: Path.join(root, '..', 'views'),
-      },
-      options.hbs,
-    );
-    logger.info('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
-    app.use(hbs.middleware(hbsOptions));
-  }
 
   if (options.bodyparser !== false) {
     const bodyparserOptions = Object.assign(

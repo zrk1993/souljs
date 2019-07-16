@@ -20,8 +20,3 @@ export const Body = createParamDecorator((ctx, data) => {
   const body = ctx.request.body;
   return data && body ? body[data] : body;
 });
-
-export const Params = createParamDecorator((ctx, data) => {
-  const body = ctx.params;
-  return data && body ? body[data] : body;
-});

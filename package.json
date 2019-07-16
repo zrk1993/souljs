@@ -1,9 +1,9 @@
 {
   "name": "souljs",
-  "version": "3.0.3",
+  "version": "3.1.1",
   "description": "A nodejs framework for building concise and decorative applications written by typescript",
   "main": "dist/index.js",
-  "types": "index.ts",
+  "types": "src/index.ts",
   "scripts": {
     "format": "prettier *.ts **/*.ts **/**/*.ts **/**/**/*.ts  --ignore-path ./.prettierignore --write && git status",
     "lint": "tslint -p tsconfig.json -c tslint.json",
@@ -13,7 +13,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/my-soul/souljs.git"
+    "url": "git+https://github.com/test/souljs.git"
   },
   "keywords": [
     "souljs"
@@ -21,9 +21,9 @@
   "author": "renkun",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/my-soul/souljs/issues"
+    "url": "https://github.com/test/souljs/issues"
   },
-  "homepage": "https://github.com/my-soul/souljs#readme",
+  "homepage": "https://github.com/test/souljs#readme",
   "devDependencies": {
     "@types/cron": "^1.6.0",
     "@types/glob": "^7.1.1",
