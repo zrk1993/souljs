@@ -1,9 +1,9 @@
 {
   "name": "souljs",
-  "version": "3.1.1",
+  "version": "3.1.7",
   "description": "A nodejs framework for building concise and decorative applications written by typescript",
   "main": "dist/index.js",
-  "types": "src/index.ts",
+  "types": "lib/index.ts",
   "scripts": {
     "format": "prettier *.ts **/*.ts **/**/*.ts **/**/**/*.ts  --ignore-path ./.prettierignore --write && git status",
     "lint": "tslint -p tsconfig.json -c tslint.json",
