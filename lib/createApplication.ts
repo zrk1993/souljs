@@ -2,7 +2,6 @@ import * as Path from 'path';
 import * as Bodyparser from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
 import * as helmet from 'koa-helmet';
-import * as hbs from 'koa-hbs';
 import * as mount from 'koa-mount';
 import cors = require('@koa/cors');
 import { logger as voidLogger } from './utils/logger';
@@ -15,7 +14,6 @@ export interface ApplicationOptions {
   staticAssets?: { root: string; prefix?: string } | object;
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
-  hbs?: { viewPath?: string } | object;
   helmet?: object | boolean;
   cors?: object | boolean;
 }
@@ -76,17 +74,6 @@ export async function createApplication(
     );
     logger.info('应用全局中间件 %s', 'koa-bodyparser');
     app.use(Bodyparser(bodyparserOptions));
-  }
-
-  if (options.hbs) {
-    const hbsOptions = Object.assign(
-      {
-        viewPath: Path.join(root, '..', 'views'),
-      },
-      options.hbs,
-    );
-    logger.info('应用全局中间件 %s 模板位置: %s', 'koa-hbs', hbsOptions.viewPath);
-    app.use(hbs.middleware(hbsOptions));
   }
 
   if (options.swagger !== false) {
