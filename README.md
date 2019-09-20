@@ -2,7 +2,7 @@
 
 A nodejs web framework, 对koa简单包装，装饰风格，内置开发常用中间件，使用typescript编写
 
-## 安装
+## 快速开始
 
 ``` bash
 git clone https://github.com/test/souljs-starter.git
@@ -11,15 +11,15 @@ npm install && npm run start
 ```
 Node.js >= 8.0.0 required.
 
-## 快速开始
 
 #### 创建应用实例
 
 ```typescript main.ts
 import { createApplication } from 'souljs';
+import * as router from './router';
 
 async function main() {
-  const app = await createApplication(__dirname, 'controller/*.ts');
+  const app = await createApplication(__dirname, Object.keys(router).map(k => router[k]));
 
   app.listen(8080);
 }
@@ -60,15 +60,14 @@ export default class User {
 
 ```typescript
 @Controller('/user')
+@Role(SYS_ROLE.admin)
 export default class User {
 
   @Post('/chname')
-  @QuerySchame(joi.object().keys({
-    id: joi.string()
-  }))
-  @BodySchame(joi.object().keys({
-    name: joi.string().required()
-  }))
+  @QuerySchame({
+    username: joi.string().required(),
+    password: joi.string().required(),
+  })
   changeName(@Body() body: any, @Query() query: any) {
     return ResultUtils.ok(body);
   }
@@ -156,8 +155,6 @@ export default class User {
 
 ### @Render(view: string) 模板渲染
 
-不能禁用hbs
-
 
 ### 使用[Joi](https://www.npmjs.com/package/joi)验证请求参数
 
@@ -172,6 +169,44 @@ export default class User {
 @Post('/test')
 test(@Body() Body: any, @Query() query: any) {}
   
+ ```
+
+ 
+### 自定义装饰器
+
+```typescript
+import { Use, Description } from 'souljs';
+export default function Role(...roles: string[]) {
+  const role = Use(async (ctx: Koa.Context, next: () => void) => {
+    const sql = `
+      SELECT R.code FROM role R
+      LEFT JOIN user_roles UR ON UR.role_id = R.id
+      WHERE UR.user_id = ?
+    `;
+    const userRoles = await db.query(sql, [signData.id]);
+    if (roles.some(r => userRoles.find(ur => ur.code === r))) {
+      await next();
+    } else {
+      throw new Error('no authorization!');
+    }
+  });
+
+  const description = Description(`【${roles.join()}】`);
+
+  return (target: any, propertyKey?: string) => {
+    role(target, propertyKey);
+    description(target, propertyKey);
+  };
+}  
+
+// 使用装饰器
+@Controller('/system/role')
+@Role(SYS_ROLE.admin)
+export class RoleController {
+  @Get('/list')
+  @Description('角色列表')
+  async list() { }
+}
  ```
  
  提供如下修饰器
