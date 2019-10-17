@@ -30,14 +30,18 @@ export class ExecutionContex {
     return async (ctx: any, next: () => void) => {
       const params: any[] = this.getRouterHandlerParams(ctx, propertyKey) || [];
 
-      const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
+      try {
+        const response = await this.contextInstance[propertyKey].call(this.contextInstance, ...params);
 
-      if (ctx.body === undefined) {
-        if (renderViewPath) {
-          await this.responseHandler.responseHtml(ctx, response, renderViewPath);
-        } else {
-          this.responseHandler.responseJson(ctx, response);
+        if (ctx.body === undefined) {
+          if (renderViewPath) {
+            await this.responseHandler.responseHtml(ctx, response, renderViewPath);
+          } else {
+            this.responseHandler.responseJson(ctx, response);
+          }
         }
+      } catch (error) {
+        ctx.app.emit('error', error, ctx);
       }
     };
   }
