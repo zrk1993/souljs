@@ -34,6 +34,7 @@ class ExecutionContex {
             }
             catch (error) {
                 ctx.app.emit('error', error, ctx);
+                throw error;
             }
         });
     }
