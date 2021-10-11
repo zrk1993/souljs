@@ -1,7 +1,6 @@
 import * as Path from 'path';
 import * as Bodyparser from 'koa-bodyparser';
 import * as koaStatic from 'koa-static';
-import * as helmet from 'koa-helmet';
 import * as mount from 'koa-mount';
 import cors = require('@koa/cors');
 import { logger as voidLogger } from './utils/logger';
@@ -14,7 +13,6 @@ export interface ApplicationOptions {
   staticAssets?: { root: string; prefix?: string } | object;
   swagger?: { url: string; prefix?: string } | boolean;
   bodyparser?: Bodyparser.Options | boolean;
-  helmet?: object | boolean;
   cors?: object | boolean;
 }
 
@@ -32,11 +30,6 @@ export async function createApplication(
   logger.info('find %d routes', routers.length);
 
   const app = new Application(routers, { logger });
-
-  if (options.helmet !== false) {
-    logger.info('应用全局中间件 %s', 'koa-helmet');
-    app.use(helmet());
-  }
 
   if (options.cors !== false) {
     logger.info('应用全局中间件 %s', 'koa-cors');
