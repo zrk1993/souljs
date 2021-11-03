@@ -209,7 +209,7 @@ export class RoleController {
 }
  ```
  
- 提供如下修饰器
+ 提供如下装饰器
 
 - @Ctx() - ctx
 - @Request() - ctx.request
